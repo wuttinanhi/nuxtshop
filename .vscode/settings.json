@@ -1,0 +1,10 @@
+{
+    "[vue]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "Vue.volar",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always",
+            "source.organizeImports": "always"
+        }
+    }
+}
