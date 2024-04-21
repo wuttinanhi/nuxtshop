@@ -7,6 +7,19 @@ interface OrderViewerDetailProps {
 }
 
 const props = defineProps<OrderViewerDetailProps>();
+
+async function payOrder(order: Order) {
+    try {
+        const result = await $fetch(`/api/orders/pay/${order.id}`, {
+            method: 'POST',
+        })
+
+        // refresh page
+        location.reload()
+    } catch (error) {
+        alert('Error when paying order')
+    }
+}
 </script>
 
 <template>
@@ -26,14 +39,16 @@ const props = defineProps<OrderViewerDetailProps>();
                         <th scope="col">Product</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Price</th>
+                        <th scope="col">Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in order.items" :key="item.id">
+                    <tr v-for="(item, index) in order.items" :key="item.product.id">
                         <th scope="row">{{ index }}</th>
-                        <td>{{ item.name }}</td>
+                        <td>{{ item.product.name }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ item.price }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.product.price * item.quantity }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -41,7 +56,8 @@ const props = defineProps<OrderViewerDetailProps>();
         <div class="card-footer text-muted">
             <div class="d-flex justify-content-between">
                 <div>
-                    <a href="#" class="btn btn-primary" v-show="order.status === 'wait_for_payment'">Pay Now</a>
+                    <button class="btn btn-primary" v-show="order.status === 'wait_for_payment'"
+                        @click="payOrder(order)">Pay Now</button>
                 </div>
 
                 <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
