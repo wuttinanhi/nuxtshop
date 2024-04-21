@@ -3,7 +3,13 @@
     "user": {
         "id": 1,
         "name": "John Doe",
-        "email": "johndoe@example.com"
+        "email": "johndoe@example.com",
+        "address": {
+            "address": "1234 Elm St",
+            "city": "Springfield",
+            "state": "IL",
+            "zip": "62701"
+        }
     },
     "items": [
         {
@@ -23,6 +29,12 @@
             "quantity": 2
         }
     ],
-    "address": "123 Main St, Anytown, USA",
-    "totalPrice": 1372.49
+    "address": {
+        "address": "1234 Elm St",
+        "city": "Springfield",
+        "state": "IL",
+        "zip": "62701"
+    },
+    "totalPrice": 1372.49,
+    "status": "wait_for_payment"
 }

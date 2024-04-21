@@ -6,7 +6,7 @@ const tabs = [
     { title: 'Payment', },
     { title: 'Preparing' },
     { title: 'Shipping' },
-    { title: 'Arrived' },
+    { title: 'Delivered' },
     { title: 'Canceled' },
 ];
 
@@ -17,6 +17,28 @@ function changeTab(index: number) {
 const { data: data } = useFetch('/api/orders')
 
 const orders: Order[] = data.value as any
+
+function numberToStatus(number: number) {
+    switch (number) {
+        case 0:
+            return 'wait_for_payment'
+        case 1:
+            return 'preparing'
+        case 2:
+            return 'shipping'
+        case 3:
+            return 'delivered'
+        case 4:
+            return 'canceled'
+        default:
+            return 'wait_for_payment'
+    }
+}
+
+function filterOrders() {
+    const status = numberToStatus(currentTab.value)
+    return orders.filter(order => order.status === status)
+}
 </script>
 
 <template>
@@ -29,7 +51,7 @@ const orders: Order[] = data.value as any
             </li>
         </ul>
 
-        <div v-for="(order, index) in orders" :key="order.id" class="mt-5">
+        <div v-for="(order, index) in filterOrders()" :key="order.id" class="mt-5">
             <OrderViewerDetail :order="order" />
         </div>
 

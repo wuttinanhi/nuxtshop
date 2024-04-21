@@ -13,11 +13,12 @@ const props = defineProps<OrderViewerDetailProps>();
     <div class="card">
         <div class="card-header">
             <h5 class="card-title">Order #{{ order.id }}</h5>
-            <p class="card-text">
-                <strong>Address: {{ order.address }}</strong>
-            </p>
         </div>
         <div class="card-body">
+            <p class="card-text mb-3">
+                <strong>Shipping:</strong> Address: {{ addressToString(order.address) }}
+            </p>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -27,7 +28,7 @@ const props = defineProps<OrderViewerDetailProps>();
                         <th scope="col">Price</th>
                     </tr>
                 </thead>
-                <tbody class="table-group-divider">
+                <tbody>
                     <tr v-for="(item, index) in order.items" :key="item.id">
                         <th scope="row">{{ index }}</th>
                         <td>{{ item.name }}</td>
@@ -39,7 +40,10 @@ const props = defineProps<OrderViewerDetailProps>();
         </div>
         <div class="card-footer text-muted">
             <div class="d-flex justify-content-between">
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <div>
+                    <a href="#" class="btn btn-primary" v-show="order.status === 'wait_for_payment'">Pay Now</a>
+                </div>
+
                 <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
             </div>
         </div>
