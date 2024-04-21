@@ -1,3 +1,5 @@
 <template>
-    <h1>index.vue</h1>
+    <h1>Products</h1>
+
+    <ProductShowcase />
 </template>
