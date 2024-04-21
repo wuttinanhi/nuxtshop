@@ -1,0 +1,28 @@
+{
+    "id": 1,
+    "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "johndoe@example.com"
+    },
+    "items": [
+        {
+            "id": 1,
+            "name": "Gaming Laptop",
+            "description": "High performance laptop for gaming",
+            "price": 1200.99,
+            "imageURL": "https://example.com/images/gaminglaptop.jpg",
+            "quantity": 1
+        },
+        {
+            "id": 2,
+            "name": "Mechanical Keyboard",
+            "description": "RGB Mechanical Keyboard for typing and gaming",
+            "price": 85.50,
+            "imageURL": "https://example.com/images/mechanicalkeyboard.jpg",
+            "quantity": 2
+        }
+    ],
+    "address": "123 Main St, Anytown, USA",
+    "totalPrice": 1372.49
+}
