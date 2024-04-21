@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <p>Some default layout content shared across all pages</p> -->
-        <PageHeader />
+        <Navbar />
         <div class="container mt-5">
 
             <slot />

@@ -25,7 +25,7 @@ import { NuxtLink } from '#build/components';
                 </form>
                 <div class="d-flex px-1 gap-1 py-2">
                     <NuxtLink to="/account" class="btn btn-primary">Account</NuxtLink>
-                    <NuxtLink to="/cart" class="btn btn-primary">Cart</NuxtLink>
+                    <NuxtLink to="/cart" class="btn btn-primary"> 🛒 Cart</NuxtLink>
                 </div>
             </div>
         </div>
