@@ -12,7 +12,11 @@ async function payOrder(order: Order) {
     try {
         const result = await $fetch(`/api/orders/pay/${order.id}`, {
             method: 'POST',
+            headers: buildAuthHeader()
         })
+
+        // alert user with confetti
+        alert('Order paid successfully 🎉')
 
         // refresh page
         location.reload()

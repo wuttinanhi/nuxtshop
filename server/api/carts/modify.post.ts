@@ -28,14 +28,25 @@ export default defineEventHandler(async (event) => {
     return new Response("Product not found", { status: 404 });
   }
 
+  console.log(
+    `Modifying cart for user ${user.id} with product ${product.id} (${mode})`
+  );
+
   switch (mode) {
     case "add":
       // add the product to the cart
-      await CartService.addToCart(user, { product: product, quantity: 1 });
+      await CartService.addToCart(user, {
+        product: product,
+        quantity: 1,
+      });
       break;
     case "remove":
       // remove the product from the cart
       await CartService.removeFromCart(user, product);
+      break;
+    case "set":
+      // set the product quantity in the cart
+      await CartService.setProductQuantity(user, product, quantity);
       break;
     default:
       return new Response("Invalid modify mode", { status: 400 });

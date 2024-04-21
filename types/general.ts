@@ -46,7 +46,7 @@ export interface Order {
 }
 
 export interface CartModifyRequest {
-  mode: "add" | "remove";
+  mode: "add" | "remove" | "set";
   productID: number;
   quantity: number;
 }

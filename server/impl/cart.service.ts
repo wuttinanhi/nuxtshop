@@ -12,10 +12,7 @@ export class CartService {
     const cart = CartService.cart.find((cart) => cart.user.id === user.id);
     if (!cart) {
       // create a new cart if it doesn't exist
-      return CartService.createCart({
-        user,
-        products: [],
-      });
+      return CartService.createCart({ user, products: [] });
     }
     return cart;
   }
@@ -47,23 +44,51 @@ export class CartService {
     // find the cart
     const cart = await CartService.getCart(user);
 
-    // find the product in the cart
+    // remove the product from the cart
     const productIndex = cart.products.findIndex(
       (p) => p.product.id === product.id
     );
-    if (productIndex === -1) {
+    cart.products.splice(productIndex, 1);
+
+    return cart;
+  }
+
+  public static async setProductQuantity(
+    user: User,
+    product: Product,
+    quantity: number
+  ): Promise<Cart | undefined> {
+    // find the cart
+    const cart = await CartService.getCart(user);
+
+    // find the product in the cart
+    const existingProduct = cart.products.find(
+      (p) => p.product.id === product.id
+    );
+    if (!existingProduct) {
       return cart;
     }
 
-    // if the product quantity is more than 1, decrease the quantity
-    // otherwise, remove the product from the cart
-    const existingProduct = cart.products[productIndex];
-    if (existingProduct.quantity > 1) {
-      existingProduct.quantity--;
-    } else {
+    // set the quantity
+    existingProduct.quantity = quantity;
+
+    // if the quantity is 0, remove the product from the cart
+    if (quantity === 0) {
+      const productIndex = cart.products.findIndex(
+        (p) => p.product.id === product.id
+      );
       cart.products.splice(productIndex, 1);
     }
 
+    return cart;
+  }
+
+  public static async clearCart(user: User): Promise<Cart | undefined> {
+    // find the cart
+    const cart = await CartService.getCart(user);
+    // clear the cart
+    cart.products = [];
+    // return the updated cart
     return cart;
   }
 }

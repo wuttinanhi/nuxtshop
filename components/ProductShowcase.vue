@@ -1,9 +1,30 @@
 <script setup lang="ts">
-import type { Product } from '~/types/general';
+import type { CartModifyRequest, Product } from '~/types/general';
 
 const { pending, data } = await useFetch('/api/products/all',
     { transform: (data) => data as Product[] }
 )
+
+async function addToCart(product: Product) {
+    console.log('Add to cart', product)
+
+    const modifyRequest: CartModifyRequest = {
+        mode: "add",
+        productID: product.id,
+        quantity: 1,
+    }
+
+    const result = await $fetch("/api/carts/modify", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
+        },
+        body: JSON.stringify(modifyRequest)
+    })
+
+    console.log('Result', result)
+}
 </script>
 
 <template>
@@ -17,7 +38,7 @@ const { pending, data } = await useFetch('/api/products/all',
                     <div class="text-center">
                         <h3 class="card-title">{{ product.name }}</h3>
                         <h5 class="card-text my-4">{{ product.price }}</h5>
-                        <button class="btn btn-primary mt-3">Add to cart</button>
+                        <button class="btn btn-primary mt-3" @click="addToCart(product)">Add to cart</button>
                     </div>
                 </div>
             </div>

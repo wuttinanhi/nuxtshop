@@ -1,13 +1,9 @@
 import { Cart, Order } from "~/types/general";
+import { calculateTotalPrice } from "~/utils/basic";
 
 export class OrderService {
   private static LATEST_ORDER_ID = 0;
   private static orders: Order[] = [];
-
-  public static async createOrder(order: Order): Promise<Order> {
-    OrderService.orders.push(order);
-    return order;
-  }
 
   public static async createOrderFromCart(cart: Cart): Promise<Order> {
     const order: Order = {
@@ -16,7 +12,7 @@ export class OrderService {
       items: cart.products,
       status: "wait_for_payment",
       address: cart.user.address,
-      totalPrice: 0,
+      totalPrice: calculateTotalPrice(cart.products),
     };
     OrderService.orders.push(order);
     return order;

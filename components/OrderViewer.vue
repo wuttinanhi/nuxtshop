@@ -19,9 +19,9 @@ const { data: data } = useFetch('/api/orders/all', {
     headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
-    }
+    },
+    transform: (data) => data as Order[]
 })
-const orders = data.value as Order[]
 
 function numberToStatus(number: number) {
     switch (number) {
@@ -41,9 +41,9 @@ function numberToStatus(number: number) {
 }
 
 function filterOrders() {
-    if (!orders) return []
+    if (!data.value) return []
     const status = numberToStatus(currentTab.value)
-    return orders.filter(order => order.status === status)
+    return data.value.filter(order => order.status === status)
 }
 
 const showingOrders = computed(() => filterOrders())
@@ -61,7 +61,8 @@ const showingOrders = computed(() => filterOrders())
     <div v-for="(order, index) in showingOrders" :key="order.id" class="mt-5" v-if="showingOrders.length >= 1">
         <OrderViewerDetail :order="order" />
     </div>
-    <div v-else class="mt-5">
-        <p>No orders. (Let's buy something!)</p>
+
+    <div v-else style="margin-top: 10%;">
+        <p class="text-center">No orders. (Let's buy something!)</p>
     </div>
 </template>

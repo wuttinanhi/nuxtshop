@@ -18,5 +18,15 @@ export default defineEventHandler(async (event) => {
   // create an order from the cart
   await OrderService.createOrderFromCart(cart);
 
+  // clear the cart
+  await CartService.clearCart(user);
+
+  console.log("Order created");
+  console.log(user.id, user.firstName, user.lastName);
+  for (const product of cart.products) {
+    console.log(product.product.id, product.product.name, product.quantity);
+  }
+  console.log("Total:", cart.products.length);
+
   return new Response("Order created", { status: 201 });
 });
