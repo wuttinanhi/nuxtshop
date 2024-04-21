@@ -31,8 +31,7 @@ async function addToCart(product: Product) {
     <div class="row row-cols-3 g-4" v-show="!pending">
         <div class="col" v-for="product in data" :key="product.id">
             <div class="card">
-                <img src="https://cdn.dummyjson.com/product-images/1/1.jpg" class="card-img"
-                    alt="{{ product.imageURL }}">
+                <img src="https://dummyjson.com/image/500/f5f5f5" class="card-img" alt="{{ product.imageURL }}">
 
                 <div class="card-body">
                     <div class="text-center">

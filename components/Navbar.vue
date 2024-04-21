@@ -21,7 +21,7 @@ import { NuxtLink } from '#build/components';
                 </ul>
                 <form class="d-flex px-1" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </form>
                 <div class="d-flex px-1 gap-1 py-2">
                     <NuxtLink to="/account" class="btn btn-primary">Account</NuxtLink>
