@@ -20,7 +20,9 @@ export default defineEventHandler(async (event) => {
   // convert id to number
   const id = parseInt(idparam, 10);
 
-  console.log(`User ${user.id} is paying for order ${id}`);
+  console.log(
+    `User #${user.id} "${user.firstName} ${user.lastName}" is paying for order ${id}`
+  );
 
   serviceKit.orderService.payForOrder(id);
 
