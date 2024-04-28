@@ -1,14 +1,16 @@
-import { AUTH_GUARD, getUserFromToken } from "~/server/impl/auth";
+import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
+  const serviceKit = ServiceKit.get();
+
   let token: string;
   try {
-    token = await AUTH_GUARD(event);
+    token = await serviceKit.authService.AUTH_GUARD(event);
   } catch (_e) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const user = await getUserFromToken(token);
+  const user = await serviceKit.authService.getUserFromToken(token);
 
   return user;
 });

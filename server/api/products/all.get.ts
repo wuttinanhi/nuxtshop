@@ -1,6 +1,7 @@
-import { ProductService } from "~/server/impl/product.service";
+import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
-  const products = await ProductService.getAll();
+  const serviceKit = ServiceKit.get();
+  const products = await serviceKit.productService.getAll();
   return products;
 });

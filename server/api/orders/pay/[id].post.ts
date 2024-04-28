@@ -1,15 +1,16 @@
-import { AUTH_GUARD, getUserFromToken } from "~/server/impl/auth";
-import { OrderService } from "~/server/impl/order.service";
+import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
+  const serviceKit = ServiceKit.get();
+
   let token: string;
   try {
-    token = await AUTH_GUARD(event);
+    token = await serviceKit.authService.AUTH_GUARD(event);
   } catch (_e) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const user = await getUserFromToken(token);
+  const user = await serviceKit.authService.getUserFromToken(token);
 
   const idparam = getRouterParam(event, "id");
   if (!idparam) {
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   console.log(`User ${user.id} is paying for order ${id}`);
 
-  OrderService.payForOrder(id);
+  serviceKit.orderService.payForOrder(id);
 
   return user;
 });

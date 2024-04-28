@@ -1,33 +1,32 @@
 import { Cart, OrderItem, Product, User } from "~/types/general";
+import { ICartService } from "../defs/cart.service";
 
-export class CartService {
+export class CartService implements ICartService {
   private static cart: Cart[] = [];
 
-  public static async createCart(cart: Cart): Promise<Cart> {
+  public async createCart(cart: Cart): Promise<Cart> {
     CartService.cart.push(cart);
     return cart;
   }
 
-  public static async getCart(user: User): Promise<Cart> {
+  public async getCart(user: User): Promise<Cart> {
     const cart = CartService.cart.find((cart) => cart.user.id === user.id);
     if (!cart) {
       // create a new cart if it doesn't exist
-      return CartService.createCart({ user, products: [] });
+      return this.createCart({ user, products: [] });
     }
     return cart;
   }
 
-  public static async addToCart(
-    user: User,
-    product: OrderItem
-  ): Promise<Cart | undefined> {
-    const cart = await CartService.getCart(user);
+  public async addToCart(user: User, product: OrderItem): Promise<Cart> {
+    const cart = await this.getCart(user);
 
     // if the product is already in the cart, increase the quantity
     // otherwise, add the product to the cart
     const existingProduct = cart.products.find(
       (p) => p.product.id === product.product.id
     );
+
     if (existingProduct) {
       existingProduct.quantity++;
     } else {
@@ -37,12 +36,9 @@ export class CartService {
     return cart;
   }
 
-  public static async removeFromCart(
-    user: User,
-    product: Product
-  ): Promise<Cart | undefined> {
+  public async removeFromCart(user: User, product: Product): Promise<Cart> {
     // find the cart
-    const cart = await CartService.getCart(user);
+    const cart = await this.getCart(user);
 
     // remove the product from the cart
     const productIndex = cart.products.findIndex(
@@ -53,13 +49,13 @@ export class CartService {
     return cart;
   }
 
-  public static async setProductQuantity(
+  public async setProductQuantity(
     user: User,
     product: Product,
     quantity: number
-  ): Promise<Cart | undefined> {
+  ): Promise<Cart> {
     // find the cart
-    const cart = await CartService.getCart(user);
+    const cart = await this.getCart(user);
 
     // find the product in the cart
     const existingProduct = cart.products.find(
@@ -83,9 +79,9 @@ export class CartService {
     return cart;
   }
 
-  public static async clearCart(user: User): Promise<Cart | undefined> {
+  public async clearCart(user: User): Promise<Cart> {
     // find the cart
-    const cart = await CartService.getCart(user);
+    const cart = await this.getCart(user);
     // clear the cart
     cart.products = [];
     // return the updated cart

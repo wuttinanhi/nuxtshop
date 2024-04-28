@@ -134,7 +134,7 @@ onMounted(async () => {
             <hr class="my-5" />
 
             <h4 class="mb-3">Action</h4>
-            <button class="btn btn-outline-danger" @click="logout">Logout</button>
+            <button class="btn btn-danger" @click="logout">Logout</button>
         </div>
     </ClientOnly>
 </template>

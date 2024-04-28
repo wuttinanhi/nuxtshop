@@ -1,25 +1,25 @@
-import { AUTH_GUARD, getUserFromToken } from "~/server/impl/auth";
-import { CartService } from "~/server/impl/cart.service";
-import { OrderService } from "~/server/impl/order.service";
+import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
+  const serviceKit = ServiceKit.get();
+
   let token: string;
   try {
-    token = await AUTH_GUARD(event);
+    token = await serviceKit.authService.AUTH_GUARD(event);
   } catch (_e) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const user = await getUserFromToken(token);
+  const user = await serviceKit.authService.getUserFromToken(token);
 
   // get the cart for the user
-  const cart = await CartService.getCart(user);
+  const cart = await serviceKit.cartService.getCart(user);
 
   // create an order from the cart
-  await OrderService.createOrderFromCart(cart);
+  await serviceKit.orderService.createOrderFromCart(cart);
 
   // clear the cart
-  await CartService.clearCart(user);
+  await serviceKit.cartService.clearCart(user);
 
   console.log("Order created");
   console.log(user.id, user.firstName, user.lastName);
