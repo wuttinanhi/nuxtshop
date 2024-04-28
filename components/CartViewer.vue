@@ -2,7 +2,8 @@
 import type { Cart, CartModifyRequest, Product } from '~/types/general';
 
 const cartVersion = ref(0)
-console.log('Client side', localStorage.getItem('token'))
+
+// getting user cart
 let { data } = await useFetch('/api/carts/me', {
     method: 'GET',
     headers: {
@@ -22,22 +23,22 @@ async function createOrder() {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
+            },
+            onResponseError: (error) => {
+                alert(error.response._data.message)
             }
         })
+
+        console.log("result.ok", result.ok)
 
         console.log('Order created')
         console.log(result)
 
         await navigateTo('/orders')
-    } catch (error) {
-        alert('Error when creating order')
+    } catch (e) {
+        console.error(e)
     }
 }
-
-const totalPrice = computed(() => {
-    if (!data.value) return 0
-    return calculateTotalPrice(data.value.products)
-})
 
 async function removeAll(product: Product) {
     console.log('Remove from cart', product)
@@ -62,7 +63,7 @@ async function removeAll(product: Product) {
     cartVersion.value++
 }
 
-async function changeQ(product: Product, quantity: number) {
+async function changeQuantity(product: Product, quantity: number) {
     console.log('Change product quantity', product, quantity)
 
     const modifyRequest: CartModifyRequest = {
@@ -84,6 +85,12 @@ async function changeQ(product: Product, quantity: number) {
 
     cartVersion.value++
 }
+
+const totalPrice = computed(() => {
+    if (!data.value) return 0
+    return calculateTotalPrice(data.value.products)
+})
+
 </script>
 
 <template>
@@ -116,9 +123,11 @@ async function changeQ(product: Product, quantity: number) {
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ item.product.name }}</td>
                     <td>
-                        <button class="btn btn-primary" @click="changeQ(item.product, item.quantity - 1)">-</button>
+                        <button class="btn btn-primary"
+                            @click="changeQuantity(item.product, item.quantity - 1)">-</button>
                         {{ item.quantity }}
-                        <button class="btn btn-primary" @click="changeQ(item.product, item.quantity + 1)">+</button>
+                        <button class="btn btn-primary"
+                            @click="changeQuantity(item.product, item.quantity + 1)">+</button>
                     </td>
                     <td>{{ (item.product.price).toFixed(2) }}</td>
                     <td>{{ (item.product.price * item.quantity).toFixed(2) }}</td>
@@ -129,10 +138,12 @@ async function changeQ(product: Product, quantity: number) {
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-show="data.products.length > 0">
+        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="data.products.length > 0">
             <h5 class="card-title">Total: {{ totalPrice.toFixed(2) }}</h5>
-
             <button class="btn btn-primary" @click="createOrder">Pay Now</button>
+        </div>
+        <div class="d-flex justify-content-center align-items-baseline mt-5" v-else>
+            <h5 class="card-title">Cart is empty</h5>
         </div>
     </div>
     <div v-else>

@@ -9,7 +9,7 @@ const loginData = ref({
     password: ''
 })
 
-const userData: Ref<User> = ref({
+const userData = ref({
     id: 0,
     email: '',
     password: '',

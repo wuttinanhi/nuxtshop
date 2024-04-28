@@ -7,8 +7,12 @@ export class OrderService implements IOrderService {
   private static orders: Order[] = [];
 
   public async createOrderFromCart(cart: Cart): Promise<Order> {
+    if (cart.products.length <= 0) {
+      throw new Error("Cart is empty");
+    }
+
     const order: Order = {
-      id: OrderService.LATEST_ORDER_ID++,
+      id: ++OrderService.LATEST_ORDER_ID,
       user: cart.user,
       items: cart.products,
       status: "wait_for_payment",

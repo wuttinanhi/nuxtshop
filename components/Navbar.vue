@@ -1,4 +1,23 @@
-import { NuxtLink } from '#build/components';
+<script setup lang="ts">
+import { ClientAuthService } from '~/clients/auth.client';
+
+// import { NuxtLink } from '#build/components';
+
+const userData = ref(null);
+
+// onMounted(async () => {
+//     const user = await ClientAuthService.getUserData();
+//     console.log(user);
+//     userData.value = user;
+// })
+
+try {
+    const user = await ClientAuthService.getUserData();
+    userData.value = user;
+} catch (error) {
+    // do nothing
+}
+</script>
 <template>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -25,7 +44,7 @@ import { NuxtLink } from '#build/components';
                 </form>
                 <div class="d-flex px-1 gap-1 py-2">
                     <NuxtLink to="/account" class="btn btn-primary">Account</NuxtLink>
-                    <NuxtLink to="/cart" class="btn btn-primary"> 🛒 Cart</NuxtLink>
+                    <NuxtLink to="/cart" class="btn btn-primary" v-show="userData">🛒 Cart</NuxtLink>
                 </div>
             </div>
         </div>
