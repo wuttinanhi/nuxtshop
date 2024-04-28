@@ -1,5 +1,5 @@
 import { IServiceKit } from "./defs/servicekit";
-import { AuthService } from "./impl/auth";
+import { AuthService } from "./impl/auth.service";
 import { CartService } from "./impl/cart.service";
 import { OrderService } from "./impl/order.service";
 import { ProductService } from "./impl/product.service";
