@@ -4,34 +4,34 @@
         "name": "Gaming Laptop",
         "description": "High performance laptop for gaming",
         "price": 1200.99,
-        "imageURL": "https://example.com/images/gaminglaptop.jpg"
+        "imageURL": "https://dummyjson.com/image/500/f5f5f5"
     },
     {
         "id": 2,
         "name": "Mechanical Keyboard",
         "description": "RGB Mechanical Keyboard for typing and gaming",
         "price": 85.50,
-        "imageURL": "https://example.com/images/mechanicalkeyboard.jpg"
+        "imageURL": "https://dummyjson.com/image/500/f5f5f5"
     },
     {
         "id": 3,
         "name": "Wireless Mouse",
         "description": "Ergonomic wireless mouse",
         "price": 25.99,
-        "imageURL": "https://example.com/images/wirelessmouse.jpg"
+        "imageURL": "https://dummyjson.com/image/500/f5f5f5"
     },
     {
         "id": 4,
         "name": "27 inch Monitor",
         "description": "27 inch 144Hz gaming monitor",
         "price": 210.00,
-        "imageURL": "https://example.com/images/monitor.jpg"
+        "imageURL": "https://dummyjson.com/image/500/f5f5f5"
     },
     {
         "id": 5,
         "name": "USB-C Hub",
         "description": "USB-C hub with multiple ports",
         "price": 35.99,
-        "imageURL": "https://example.com/images/usbc.jpg"
+        "imageURL": "https://dummyjson.com/image/500/f5f5f5"
     }
 ]

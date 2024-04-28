@@ -4,6 +4,7 @@ export interface Product {
   description: string;
   price: number;
   imageURL: string;
+  imageData?: any;
 }
 
 export interface Cart {
@@ -18,12 +19,15 @@ export interface Address {
   zip: string;
 }
 
+export type UserRole = "admin" | "user";
+
 export interface User {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
   address: Address;
+  role: UserRole;
 }
 
 export interface OrderItem {
@@ -37,6 +41,9 @@ export type OrderStatus =
   | "shipping"
   | "delivered"
   | "canceled";
+
+// add all to OrderStatus
+export type OrderStatusAdmin = OrderStatus | "all";
 
 export interface Order {
   id: number;
@@ -52,3 +59,5 @@ export interface CartModifyRequest {
   productID: number;
   quantity: number;
 }
+
+export type AdminProductFormMode = "create" | "update";

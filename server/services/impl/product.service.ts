@@ -3,6 +3,8 @@ import { Product } from "~/types/general";
 import { IProductService } from "../defs/product.service";
 
 export class ProductService implements IProductService {
+  private static LATEST_PRODUCT_ID: number = 0;
+
   private static products: Product[] = [];
 
   public async init() {
@@ -12,10 +14,19 @@ export class ProductService implements IProductService {
       "utf8"
     );
     ProductService.products = JSON.parse(rawdata);
+
+    // limit number of products to 3
+    ProductService.products = ProductService.products.slice(0, 3);
+
+    // set LATEST_PRODUCT_ID to the last product id
+    ProductService.LATEST_PRODUCT_ID =
+      ProductService.products[ProductService.products.length - 1].id;
+
     console.log("Products loaded");
   }
 
   public async createProduct(product: Product): Promise<Product> {
+    product.id = ++ProductService.LATEST_PRODUCT_ID;
     ProductService.products.push(product);
     return product;
   }

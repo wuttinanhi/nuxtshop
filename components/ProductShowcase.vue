@@ -28,8 +28,8 @@ async function addToCart(product: Product) {
 </script>
 
 <template>
-    <div class="row row-cols-3 g-4" v-show="!pending">
-        <div class="col" v-for="product in data" :key="product.id">
+    <div class="row g-3 p-md-5 " v-show="!pending">
+        <div class="col-xs-12 col-md-4" v-for="product in data" :key="product.id">
             <div class="card">
                 <img src="https://dummyjson.com/image/500/f5f5f5" class="card-img" alt="{{ product.imageURL }}">
 

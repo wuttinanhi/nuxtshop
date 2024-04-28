@@ -18,6 +18,7 @@ export class AuthService implements IAuthService {
         state: "IL",
         zip: "62701",
       },
+      role: "admin",
     };
   }
 

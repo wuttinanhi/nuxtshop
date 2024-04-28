@@ -21,6 +21,7 @@ const userData = ref({
     },
     firstName: '',
     lastName: '',
+    role: 'user'
 } as User)
 
 async function loginSubmit() {

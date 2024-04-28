@@ -12,11 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const user = await serviceKit.authService.getUserFromToken(token);
 
-  // const orders = await serviceKit.orderService.filterOrdersByStatus(
-  //   "preparing"
-  // );
+  const products = await serviceKit.productService.getAll();
 
-  const orders = await serviceKit.orderService.getAllOrders();
-
-  return orders;
+  return products;
 });
