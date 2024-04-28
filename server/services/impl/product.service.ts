@@ -8,7 +8,7 @@ export class ProductService implements IProductService {
   public async init() {
     console.log("Loading products");
     let rawdata = fs.readFileSync(
-      `${process.cwd()}/ublic/static/products.json`,
+      `${process.cwd()}/public/static/products.json`,
       "utf8"
     );
     ProductService.products = JSON.parse(rawdata);
