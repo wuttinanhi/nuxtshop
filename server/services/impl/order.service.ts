@@ -1,4 +1,4 @@
-import { Cart, Order } from "~/types/general";
+import { Cart, Order, OrderStatus } from "~/types/general";
 import { calculateTotalPrice } from "~/utils/basic";
 import { IOrderService } from "../defs/order.service";
 
@@ -44,5 +44,22 @@ export class OrderService implements IOrderService {
 
   public async getAllOrders(): Promise<Order[]> {
     return OrderService.orders;
+  }
+
+  public async filterOrdersByStatus(status: OrderStatus): Promise<Order[]> {
+    return OrderService.orders.filter((order) => order.status === status);
+  }
+
+  public async updateOrderStatus(
+    id: number,
+    status: OrderStatus
+  ): Promise<Order> {
+    const order = await this.getOrder(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    order.status = status;
+    return order;
   }
 }

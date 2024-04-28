@@ -1,4 +1,4 @@
-import { Cart, Order } from "~/types/general";
+import { Cart, Order, OrderStatus } from "~/types/general";
 
 export interface IOrderService {
   createOrderFromCart(cart: Cart): Promise<Order>;
@@ -6,4 +6,6 @@ export interface IOrderService {
   payForOrder(id: number): Promise<Order>;
   getOrdersForUser(uid: number): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
+  filterOrdersByStatus(status: OrderStatus): Promise<Order[]>;
+  updateOrderStatus(id: number, status: OrderStatus): Promise<Order>;
 }

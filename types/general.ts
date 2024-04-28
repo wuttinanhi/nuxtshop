@@ -31,18 +31,20 @@ export interface OrderItem {
   quantity: number;
 }
 
+export type OrderStatus =
+  | "wait_for_payment"
+  | "preparing"
+  | "shipping"
+  | "delivered"
+  | "canceled";
+
 export interface Order {
   id: number;
   user: User;
   items: OrderItem[];
   address: Address;
   totalPrice: number;
-  status:
-    | "wait_for_payment"
-    | "preparing"
-    | "shipping"
-    | "delivered"
-    | "canceled";
+  status: OrderStatus;
 }
 
 export interface CartModifyRequest {
