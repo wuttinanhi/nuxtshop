@@ -54,16 +54,17 @@ async function onSubmit() {
     formData.append('description', product.value.description);
 
     const requestMethod: any = props.mode === 'update' ? 'PATCH' : 'POST';
-    const result = await $fetch('/api/admin/products', {
+    const result: any = await $fetch('/api/admin/products', {
         method: requestMethod,
         headers: {
             'Authorization': 'Bearer ' + userToken || ''
         },
-        body: formData
+        body: formData,
     });
 
     console.log(result);
 
+    props.product!.imageURL = result.imageURL;
     props.modalCloseButtonRef.click();
 }
 

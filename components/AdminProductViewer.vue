@@ -2,6 +2,7 @@
 import { ClientAuthService } from '~/clients/auth.client';
 import type { Product } from '~/types/general';
 import AdminProductDialog from './AdminProductDialog.vue';
+import AdminOrderViewerRow from './AdminProductViewerRow.vue';
 
 const token = ClientAuthService.getToken();
 const userData = await ClientAuthService.getUserData();
@@ -35,19 +36,8 @@ let { data } = await useFetch(() => `/api/admin/products`, {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(product, index) in data" :key="product.id">
-                    <th scope="row">{{ index + 1 }}</th>
-                    <td>
-                        <img :src="product.imageURL" :alt="product.name" width="100" height="100">
-                    </td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.price }}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <AdminProductDialog :product="product" mode="update" />
-                        </div>
-                    </td>
-                </tr>
+                <AdminOrderViewerRow :product="product" :index="index" v-for="(product, index) in data"
+                    :key="product.id" />
             </tbody>
         </table>
     </ClientOnly>
