@@ -38,10 +38,12 @@ try {
                         <NuxtLink to="/about" class="nav-link active" aria-current="page">About</NuxtLink>
                     </li>
                 </ul>
-                <form class="d-flex px-1" role="search">
+
+                <!-- <form class="d-flex px-1" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-primary" type="submit">Search</button>
-                </form>
+                </form> -->
+
                 <div class="d-flex px-1 gap-1 py-2">
                     <NuxtLink to="/account" class="btn btn-primary">Account</NuxtLink>
                     <NuxtLink to="/cart" class="btn btn-primary" v-show="userData">🛒 Cart</NuxtLink>
