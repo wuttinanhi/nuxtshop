@@ -1,5 +1,5 @@
 import fs from "fs";
-import { Product } from "~/types/general";
+import { Product } from "~/types/entity";
 import { IProductService } from "../defs/product.service";
 
 export class ProductService implements IProductService {

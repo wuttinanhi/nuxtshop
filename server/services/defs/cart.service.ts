@@ -1,4 +1,5 @@
-import { Cart, OrderItem, Product, User } from "~/types/general";
+import { Product } from "~/types/entity";
+import { Cart, OrderItem, User } from "~/types/general";
 
 export interface ICartService {
   createCart(cart: Cart): Promise<Cart>;

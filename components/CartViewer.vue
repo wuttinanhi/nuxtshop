@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Cart, CartModifyRequest, Product } from '~/types/general';
+import type { Product } from "~/types/entity";
+import type { Cart, CartModifyRequest } from '~/types/general';
 
 const cartVersion = ref(0)
 

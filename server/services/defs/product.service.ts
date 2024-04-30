@@ -1,4 +1,4 @@
-import { Product } from "~/types/general";
+import { Product } from "~/types/entity";
 
 export interface IProductService {
   init(): Promise<void>;

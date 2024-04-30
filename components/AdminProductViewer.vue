@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ClientAuthService } from '~/clients/auth.client';
-import type { Product } from '~/types/general';
+import type { Product } from "~/types/entity";
 import AdminProductDialog from './AdminProductDialog.vue';
 import AdminOrderViewerRow from './AdminProductViewerRow.vue';
 

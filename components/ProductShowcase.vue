@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { CartModifyRequest, Product } from '~/types/general';
+import type { Product } from "~/types/entity";
+import type { CartModifyRequest } from '~/types/general';
 
 const { pending, data } = await useFetch('/api/products/all',
     { transform: (data) => data as Product[] }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ClientAuthService } from '~/clients/auth.client';
-import type { AdminProductFormMode, Product } from '~/types/general';
+import type { Product } from "~/types/entity";
+import type { AdminProductFormMode } from '~/types/general';
 
 const userToken = ClientAuthService.getToken();
 

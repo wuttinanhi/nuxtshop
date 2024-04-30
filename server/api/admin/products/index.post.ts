@@ -1,9 +1,9 @@
 import { ServiceKit } from "@/server/services/service.kit";
-import { Product } from "@/types/general";
 import { getFormDataValue } from "@/utils/server";
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
+import { Product } from "~/types/entity";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = ServiceKit.get();
