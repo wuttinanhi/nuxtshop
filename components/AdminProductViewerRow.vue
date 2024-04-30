@@ -15,7 +15,7 @@ const props = defineProps({
 const product = ref(props.product);
 </script>
 <template>
-    <tr>
+    <tr v-show="!product.__clientDeleted">
         <th scope="row">{{ props.index + 1 }}</th>
         <td>
             <img :src="product.imageURL" :alt="product.name" width="100" height="100">

@@ -5,6 +5,7 @@ export interface Product {
   price: number;
   imageURL: string;
   imageData?: any;
+  __clientDeleted?: boolean;
 }
 
 export interface Cart {

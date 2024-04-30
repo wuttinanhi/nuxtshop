@@ -34,6 +34,10 @@ const buttonLabel = computed(() => {
     return props.mode === 'update' ? 'Update' : 'Add';
 });
 
+function closeModal() {
+    props.modalCloseButtonRef.click();
+}
+
 async function onSubmit() {
     const formData = new FormData();
 
@@ -64,8 +68,8 @@ async function onSubmit() {
 
     console.log(result);
 
-    props.product!.imageURL = result.imageURL;
-    props.modalCloseButtonRef.click();
+    product.value.imageURL = result.imageURL;
+    closeModal();
 }
 
 function onFileChange(e: Event) {
@@ -80,6 +84,23 @@ function onProductImageClick() {
     fileInput.value?.click();
 }
 
+async function deleteProduct() {
+    // prompt user for confirmation
+    const confirmation = confirm('Are you sure you want to delete this product?');
+    if (!confirmation) return;
+
+    const result = await $fetch('/api/admin/products/' + product.value.id, {
+        method: 'DELETE',
+        headers: {
+            "Authorization": "Bearer " + userToken || ""
+        }
+    })
+
+    console.log(result);
+    // set product.__clientDeleted to true
+    product.value.__clientDeleted = true;
+    closeModal();
+}
 </script>
 
 <template>
@@ -110,7 +131,8 @@ function onProductImageClick() {
                 <input type="file" @change="onFileChange" style="display: none" ref="fileInput">
             </div>
 
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end gap-3">
+                <button type="button" class="btn btn-danger" @click="deleteProduct">Delete</button>
                 <button type="submit" class="btn btn-primary">{{ buttonLabel }}</button>
             </div>
         </form>

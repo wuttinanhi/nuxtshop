@@ -47,7 +47,7 @@ export class ProductService implements IProductService {
       (product) => product.id === id
     );
     if (index === -1) {
-      return undefined;
+      return;
     }
     ProductService.products.splice(index, 1)[0];
   }
