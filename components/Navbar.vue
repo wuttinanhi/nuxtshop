@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ClientAuthService } from '~/clients/auth.client';
+import type { User } from '~/types/general';
 
 // import { NuxtLink } from '#build/components';
 
-const userData = ref(null);
+const userData: Ref<User | undefined> = ref(undefined);
 
 // onMounted(async () => {
 //     const user = await ClientAuthService.getUserData();
@@ -36,6 +37,21 @@ try {
                     </li>
                     <li class="nav-item">
                         <NuxtLink to="/about" class="nav-link active" aria-current="page">About</NuxtLink>
+                    </li>
+
+                    <li class="nav-item ps-sm-5" v-show="userData && userData.role === 'admin'">
+                        <NuxtLink to="#" class="nav-link">Admin:
+                        </NuxtLink>
+                    </li>
+
+                    <li class="nav-item" v-show="userData && userData.role === 'admin'">
+                        <NuxtLink to="/admin/products" class="nav-link active" aria-current="page">Manage Product
+                        </NuxtLink>
+                    </li>
+
+                    <li class="nav-item" v-show="userData && userData.role === 'admin'">
+                        <NuxtLink to="/admin/orders" class="nav-link active" aria-current="page">Manage Orders
+                        </NuxtLink>
                     </li>
                 </ul>
 
