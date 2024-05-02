@@ -1,53 +1,51 @@
-export interface Product {
-  id: number;
+import type { OrderStatus } from "~/shared/enums/orderstatus.enum";
+import type { UserRole } from "~/shared/enums/userrole.enum";
+
+export interface IProduct {
+  id?: number;
   name: string;
   description: string;
   price: number;
-  imageURL: string;
+  imageURL?: string;
   imageData?: any;
   __clientDeleted?: boolean;
 }
 
-export interface OrderItem {
-  product: Product;
+export interface IOrderItem {
+  id?: number;
+  product: IProduct;
   quantity: number;
 }
 
-export interface Address {
+export interface IAddress {
+  id?: number;
   address: string;
   city: string;
   state: string;
   zip: string;
 }
 
-export type UserRole = "admin" | "user";
-
-export interface User {
-  id: number;
+export interface IUser {
+  id?: number;
   firstName: string;
   lastName: string;
   email: string;
-  address: Address;
+  address: IAddress;
   role: UserRole;
+  password?: string;
 }
 
-export interface Cart {
-  user: User;
-  products: OrderItem[];
+export interface ICart {
+  id?: number;
+  user: IUser;
+  products: IOrderItem[];
 }
 
-export type OrderStatus =
-  | "wait_for_payment"
-  | "preparing"
-  | "shipping"
-  | "delivered"
-  | "canceled";
-
-export interface Order {
-  id: number;
-  user: User;
-  items: OrderItem[];
-  address: Address;
+export interface IOrder {
+  id?: number;
+  user: IUser;
+  items: IOrderItem[];
+  address: IAddress;
   totalPrice: number;
   status: OrderStatus;
 }

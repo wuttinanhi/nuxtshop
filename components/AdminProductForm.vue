@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { IProduct } from "@/types/entity";
 import { ClientAuthService } from '~/clients/auth.client';
-import type { Product } from "~/types/entity";
 import type { AdminProductFormMode } from '~/types/general';
 
 const userToken = ClientAuthService.getToken();
@@ -13,14 +13,14 @@ const props = defineProps({
         type: String as () => AdminProductFormMode
     },
     product: {
-        type: Object as () => Product
+        type: Object as () => IProduct
     },
     modalCloseButtonRef: {
         type: Object as () => any,
     }
 });
 
-const product: Ref<Product> = ref(props.product || {
+const product: Ref<IProduct> = ref(props.product || {
     id: 0,
     name: '',
     description: '',

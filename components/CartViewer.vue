@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Product } from "~/types/entity";
-import type { Cart, CartModifyRequest } from '~/types/general';
+import type { ICart, IProduct } from "@/types/entity";
+import type { CartModifyRequest } from "~/types/general";
+
 
 const cartVersion = ref(0)
 
@@ -12,7 +13,7 @@ let { data } = await useFetch('/api/carts/me', {
         'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
     },
     transform: (data) => {
-        return data as Cart
+        return data as ICart
     },
     watch: [cartVersion]
 })
@@ -41,7 +42,7 @@ async function createOrder() {
     }
 }
 
-async function removeAll(product: Product) {
+async function removeAll(product: IProduct) {
     console.log('Remove from cart', product)
 
     const modifyRequest: CartModifyRequest = {
@@ -64,7 +65,7 @@ async function removeAll(product: Product) {
     cartVersion.value++
 }
 
-async function changeQuantity(product: Product, quantity: number) {
+async function changeQuantity(product: IProduct, quantity: number) {
     console.log('Change product quantity', product, quantity)
 
     const modifyRequest: CartModifyRequest = {

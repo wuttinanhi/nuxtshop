@@ -1,11 +1,11 @@
-import { Product } from "~/types/entity";
+import type { IProduct } from "@/types/entity";
 
 export interface IProductService {
   init(): Promise<void>;
-  createProduct(product: Product): Promise<Product>;
-  getAll(): Promise<Product[]>;
-  getByID(id: number): Promise<Product | undefined>;
+  createProduct(product: IProduct): Promise<IProduct>;
+  getAll(): Promise<IProduct[]>;
+  getByID(id: number): Promise<IProduct | null>;
   deleteProduct(id: number): Promise<void>;
-  updateProduct(id: number, product: Product): Promise<Product>;
-  searchProducts(query: string): Promise<Product[]>;
+  updateProduct(id: number, product: IProduct): Promise<IProduct>;
+  searchProducts(query: string): Promise<IProduct[]>;
 }

@@ -1,11 +1,12 @@
-import { Cart, Order, OrderStatus } from "~/types/general";
+import type { ICart, IOrder } from "@/types/entity";
+import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export interface IOrderService {
-  createOrderFromCart(cart: Cart): Promise<Order>;
-  getOrder(id: number): Promise<Order | undefined>;
-  payForOrder(id: number): Promise<Order>;
-  getOrdersForUser(uid: number): Promise<Order[]>;
-  getAllOrders(): Promise<Order[]>;
-  filterOrdersByStatus(status: OrderStatus): Promise<Order[]>;
-  updateOrderStatus(id: number, status: OrderStatus): Promise<Order>;
+  createOrderFromCart(cart: ICart): Promise<IOrder>;
+  getOrder(id: number): Promise<IOrder | undefined>;
+  payForOrder(id: number): Promise<IOrder>;
+  getOrdersForUser(uid: number): Promise<IOrder[]>;
+  getAllOrders(): Promise<IOrder[]>;
+  filterOrdersByStatus(status: OrderStatus): Promise<IOrder[]>;
+  updateOrderStatus(id: number, status: OrderStatus): Promise<IOrder>;
 }

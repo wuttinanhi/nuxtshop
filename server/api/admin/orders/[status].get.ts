@@ -1,5 +1,5 @@
 import { ServiceKit } from "~/server/services/service.kit";
-import { OrderStatusAdmin } from "~/types/general";
+import { stringToOrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = ServiceKit.get();
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   if (!statusParam) {
     return new Response("Bad Request", { status: 400 });
   }
-  const status = statusParam as OrderStatusAdmin;
+  const status = stringToOrderStatus(statusParam);
 
   if (status === "all") {
     const orders = await serviceKit.orderService.getAllOrders();

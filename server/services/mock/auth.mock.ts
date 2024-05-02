@@ -1,12 +1,13 @@
-import { User } from "~/types/general";
-import { IAuthService } from "../defs/auth.service";
+import type { IUser } from "@/types/entity";
+import { UserRole } from "~/shared/enums/userrole.enum";
+import type { IAuthService } from "../defs/auth.service";
 
-export class AuthService implements IAuthService {
+export class AuthServiceMock implements IAuthService {
   public async validateToken(token: string): Promise<boolean> {
     return token === "valid-token";
   }
 
-  public async getUserFromToken(token: string): Promise<User> {
+  public async getUserFromToken(token: string): Promise<IUser> {
     return {
       id: 1,
       email: "john@example.com",
@@ -18,7 +19,7 @@ export class AuthService implements IAuthService {
         state: "IL",
         zip: "62701",
       },
-      role: "admin",
+      role: UserRole.ADMIN,
     };
   }
 

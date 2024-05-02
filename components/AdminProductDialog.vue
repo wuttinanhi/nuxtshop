@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product } from "~/types/entity";
+import type { IProduct } from "@/types/entity";
 import type { AdminProductFormMode } from '~/types/general';
 
 // import type { Product } from '~/types/general';
@@ -7,7 +7,7 @@ import type { AdminProductFormMode } from '~/types/general';
 
 const props = defineProps({
     product: {
-        type: Object as () => Product,
+        type: Object as () => IProduct,
     },
     mode: {
         type: String as () => AdminProductFormMode,

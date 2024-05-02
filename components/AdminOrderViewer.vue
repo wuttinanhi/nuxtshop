@@ -1,27 +1,28 @@
 <script setup lang="ts">
 import { ClientAuthService } from '~/clients/auth.client';
-import type { Order, OrderStatus, OrderStatusAdmin } from '~/types/general';
+import { OrderStatus } from '~/shared/enums/orderstatus.enum';
+import type { IOrder } from '~/types/entity';
 
 const token = ClientAuthService.getToken();
 const userData = await ClientAuthService.getUserData();
 
 interface Tab {
     title: string;
-    status: OrderStatusAdmin;
+    status: OrderStatus;
 }
 
-const currentTab: Ref<OrderStatusAdmin> = ref('all');
+const currentTab: Ref<OrderStatus> = ref(OrderStatus.All);
 
 const tabs: Tab[] = [
-    { title: 'All', status: 'all' },
-    { title: 'Wait for payment', status: 'wait_for_payment' },
-    { title: 'Preparing', status: 'preparing' },
-    { title: 'Shipping', status: 'shipping' },
-    { title: 'Delivered', status: 'delivered' },
-    { title: 'Canceled', status: 'canceled' },
+    { title: 'All', status: OrderStatus.All },
+    { title: 'Wait for payment', status: OrderStatus.WaitForPayment },
+    { title: 'Preparing', status: OrderStatus.Preparing },
+    { title: 'Shipping', status: OrderStatus.Shipping },
+    { title: 'Delivered', status: OrderStatus.Delivered },
+    { title: 'Canceled', status: OrderStatus.Canceled }
 ];
 
-function changeTab(newTab: OrderStatusAdmin) {
+function changeTab(newTab: OrderStatus) {
     currentTab.value = newTab;
 }
 
@@ -33,7 +34,7 @@ let { data } = await useFetch(() => `/api/admin/orders/${currentTab.value}`, {
         'Authorization': 'Bearer ' + token || ''
     },
     transform: (data) => {
-        return data as Order[]
+        return data as IOrder[]
     },
     watch: [currentTab],
 });
@@ -89,11 +90,11 @@ function updateOrderStatus(orderId: any, status: OrderStatus) {
                 <td>{{ order.status }}</td>
                 <td>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-primary" @click="updateOrderStatus(order.id, 'shipping')"
+                        <button class="btn btn-primary" @click="updateOrderStatus(order.id, OrderStatus.Shipping)"
                             v-if="order.status === 'preparing'">
                             Update to Shipping
                         </button>
-                        <button class="btn btn-danger" @click="updateOrderStatus(order.id, 'canceled')">
+                        <button class="btn btn-danger" @click="updateOrderStatus(order.id, OrderStatus.Canceled)">
                             Cancel
                         </button>
                         <button class="btn btn-success">View</button>

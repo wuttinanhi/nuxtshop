@@ -1,5 +1,5 @@
 import { ServiceKit } from "~/server/services/service.kit";
-import { CartModifyRequest } from "~/types/general";
+import type { CartModifyRequest } from "~/types/general";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = ServiceKit.get();

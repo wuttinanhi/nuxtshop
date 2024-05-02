@@ -1,17 +1,16 @@
-import { Product } from "~/types/entity";
-import { Cart, OrderItem, User } from "~/types/general";
-import { ICartService } from "../defs/cart.service";
+import type { ICart, IOrderItem, IProduct, IUser } from "@/types/entity";
+import type { ICartService } from "../defs/cart.service";
 
-export class CartService implements ICartService {
-  private static cart: Cart[] = [];
+export class CartServiceMock implements ICartService {
+  private static cart: ICart[] = [];
 
-  public async createCart(cart: Cart): Promise<Cart> {
-    CartService.cart.push(cart);
+  public async createCart(cart: ICart): Promise<ICart> {
+    CartServiceMock.cart.push(cart);
     return cart;
   }
 
-  public async getCart(user: User): Promise<Cart> {
-    const cart = CartService.cart.find((cart) => cart.user.id === user.id);
+  public async getCart(user: IUser): Promise<ICart> {
+    const cart = CartServiceMock.cart.find((cart) => cart.user.id === user.id);
     if (!cart) {
       // create a new cart if it doesn't exist
       return this.createCart({ user, products: [] });
@@ -19,7 +18,7 @@ export class CartService implements ICartService {
     return cart;
   }
 
-  public async addToCart(user: User, product: OrderItem): Promise<Cart> {
+  public async addToCart(user: IUser, product: IOrderItem): Promise<ICart> {
     const cart = await this.getCart(user);
 
     // if the product is already in the cart, increase the quantity
@@ -37,7 +36,7 @@ export class CartService implements ICartService {
     return cart;
   }
 
-  public async removeFromCart(user: User, product: Product): Promise<Cart> {
+  public async removeFromCart(user: IUser, product: IProduct): Promise<ICart> {
     // find the cart
     const cart = await this.getCart(user);
 
@@ -51,10 +50,10 @@ export class CartService implements ICartService {
   }
 
   public async setProductQuantity(
-    user: User,
-    product: Product,
+    user: IUser,
+    product: IProduct,
     quantity: number
-  ): Promise<Cart> {
+  ): Promise<ICart> {
     // find the cart
     const cart = await this.getCart(user);
 
@@ -80,7 +79,7 @@ export class CartService implements ICartService {
     return cart;
   }
 
-  public async clearCart(user: User): Promise<Cart> {
+  public async clearCart(user: IUser): Promise<ICart> {
     // find the cart
     const cart = await this.getCart(user);
     // clear the cart

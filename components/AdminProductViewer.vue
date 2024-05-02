@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { IProduct } from "@/types/entity";
 import { ClientAuthService } from '~/clients/auth.client';
-import type { Product } from "~/types/entity";
 import AdminProductDialog from './AdminProductDialog.vue';
 import AdminOrderViewerRow from './AdminProductViewerRow.vue';
 
@@ -14,7 +14,7 @@ let { data } = await useFetch(() => `/api/admin/products`, {
         'Authorization': 'Bearer ' + token || ''
     },
     transform: (data) => {
-        return data as Product[]
+        return data as IProduct[]
     },
 });
 </script>

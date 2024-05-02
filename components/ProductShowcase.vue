@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Product } from "~/types/entity";
+import type { IProduct } from "@/types/entity";
 import type { CartModifyRequest } from '~/types/general';
 
 const { pending, data } = await useFetch('/api/products/all',
-    { transform: (data) => data as Product[] }
+    { transform: (data) => data as IProduct[] }
 )
 
-async function addToCart(product: Product) {
+async function addToCart(product: IProduct) {
     console.log('Add to cart', product)
 
     const modifyRequest: CartModifyRequest = {

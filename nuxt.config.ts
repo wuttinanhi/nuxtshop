@@ -5,17 +5,18 @@ export default defineNuxtConfig({
     head: {
       link: [
         {
-          rel: 'stylesheet',
-          href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'
-        }
+          rel: "stylesheet",
+          href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
+        },
       ],
       script: [
         {
-          src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-          tagPosition: 'bodyClose'
-        }
-      ]
-    }
+          src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
+          tagPosition: "bodyClose",
+        },
+      ],
+    },
   },
-  css: ['@/assets/main.css'],
-})
+  css: ["@/assets/main.css"],
+  plugins: ["@/server/init.ts"],
+});

@@ -1,9 +1,9 @@
 import { ServiceKit } from "@/server/services/service.kit";
+import type { IProduct } from "@/types/entity";
 import { getFormDataValue } from "@/utils/server";
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
-import { Product } from "~/types/entity";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = ServiceKit.get();
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
   const priceRaw = getFormDataValue(multipartFormData, "price");
   const price = priceRaw ? parseFloat(priceRaw) : undefined;
 
-  const newProduct: Product = {
+  const newProduct: IProduct = {
     id: oldProduct.id,
     name: name || oldProduct.name,
     description: description || oldProduct.description,
