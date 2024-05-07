@@ -4,7 +4,7 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { AdminProductFormMode } from "~/types/general";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token;
+const token = injectUser?.token.value;
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageFile = ref<File | null>(null);

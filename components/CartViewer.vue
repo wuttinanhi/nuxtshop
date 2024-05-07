@@ -47,7 +47,7 @@ async function removeAll(product: IProduct) {
 
     const modifyRequest: CartModifyRequest = {
         mode: "remove",
-        productID: product.id,
+        productID: product.id!,
         quantity: 1,
     }
 
@@ -70,7 +70,7 @@ async function changeQuantity(product: IProduct, quantity: number) {
 
     const modifyRequest: CartModifyRequest = {
         mode: "set",
-        productID: product.id,
+        productID: product.id!,
         quantity: quantity,
     }
 

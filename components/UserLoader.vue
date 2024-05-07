@@ -4,7 +4,7 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { IUser } from "~/types/entity";
 
 const user: Ref<IUser | undefined> = ref(undefined);
-const token: Ref<string | undefined> = ref(ClientAuthService.getToken());
+const token: Ref<string | undefined> = ref(undefined);
 
 function setUser(user: IUser) {
   user.value = user;
@@ -12,12 +12,16 @@ function setUser(user: IUser) {
 
 try {
   if (process.client) {
+    const userData = await ClientAuthService.getUserData();
+
+    user.value = userData;
     token.value = ClientAuthService.getToken();
-    const userFetch = await ClientAuthService.getUserData();
-    user.value = userFetch;
+
+    console.log("UserLoader > User loaded", user.value);
+    console.log("UserLoader > Token:", token.value);
   }
 } catch (error) {
-  console.log("No user logged in", error);
+  console.log("No user logged in:", (error as Error).message);
 }
 
 provide(KEY_USER, {

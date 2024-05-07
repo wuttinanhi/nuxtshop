@@ -4,7 +4,7 @@ import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import type { IOrder } from "~/types/entity";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token;
+const token = injectUser?.token.value;
 
 interface Tab {
   title: string;

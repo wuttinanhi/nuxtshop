@@ -2,7 +2,7 @@
 import { KEY_USER } from "~/shared/enums/keys";
 
 const injectUser = inject(KEY_USER, undefined);
-const user = injectUser?.user;
+const user = injectUser?.user.value;
 </script>
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">

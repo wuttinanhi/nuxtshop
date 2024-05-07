@@ -5,7 +5,7 @@ import AdminProductDialog from "./AdminProductDialog.vue";
 import AdminOrderViewerRow from "./AdminProductViewerRow.vue";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token;
+const token = injectUser?.token.value;
 
 let { data } = await useFetch(() => `/api/admin/products`, {
   method: "GET",
