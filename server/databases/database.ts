@@ -154,10 +154,6 @@ export class Product extends Model<IProduct> {
   declare description: string;
   declare price: number;
   declare imageURL?: string;
-
-  // timestamps!
-  readonly createdAt!: Date;
-  readonly updatedAt!: Date;
 }
 
 Product.init(

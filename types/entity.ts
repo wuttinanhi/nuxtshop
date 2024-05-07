@@ -26,6 +26,7 @@ export interface IAddress {
 }
 
 export interface IUser {
+  value: IUser;
   id?: number;
   firstName: string;
   lastName: string;

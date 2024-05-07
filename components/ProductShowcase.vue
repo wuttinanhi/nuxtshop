@@ -11,7 +11,7 @@ async function addToCart(product: IProduct) {
 
     const modifyRequest: CartModifyRequest = {
         mode: "add",
-        productID: product.id,
+        productID: product.id!,
         quantity: 1,
     }
 
