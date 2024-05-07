@@ -1,7 +1,9 @@
 <template>
   <div>
-    <UserLoader />
     <Navbar />
+    <ClientOnly>
+      <UserLoader />
+    </ClientOnly>
 
     <div class="container mt-5">
       <slot />

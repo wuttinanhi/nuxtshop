@@ -11,9 +11,11 @@ function setUser(user: IUser) {
 }
 
 try {
-  token.value = ClientAuthService.getToken();
-  const userFetch = await ClientAuthService.getUserData();
-  user.value = userFetch;
+  if (process.client) {
+    token.value = ClientAuthService.getToken();
+    const userFetch = await ClientAuthService.getUserData();
+    user.value = userFetch;
+  }
 } catch (error) {
   console.log("No user logged in", error);
 }

@@ -1,7 +1,6 @@
 import type { IProductService } from "@/server/services/defs/product.service";
 import type { IProduct } from "@/types/entity";
 import fs from "fs";
-import { logger } from "nuxt/kit";
 import { Op } from "sequelize";
 import { DatabaseSingleton, Product } from "~/server/databases/database";
 
@@ -33,7 +32,7 @@ export class ProductServiceORM implements IProductService {
   }
 
   constructor() {
-    logger.info("ProductServiceORM initialized");
+    console.log("ProductServiceORM initialized");
 
     // initialize the products
     this.init();
