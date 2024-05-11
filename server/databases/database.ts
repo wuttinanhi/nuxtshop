@@ -48,10 +48,10 @@ export class DatabaseSingleton {
     Cart.hasMany(OrderItem);
 
     Order.belongsTo(User);
-    Order.belongsTo(Address);
-    Order.hasMany(OrderItem);
+    Order.belongsTo(Address, { as: "address" });
+    Order.hasMany(OrderItem, { as: "items" });
 
-    OrderItem.belongsTo(Product);
+    OrderItem.belongsTo(Product, { as: "product" });
     OrderItem.belongsTo(Order);
     OrderItem.belongsTo(Cart);
 

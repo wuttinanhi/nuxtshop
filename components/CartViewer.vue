@@ -90,7 +90,7 @@ async function changeQuantity(product: IProduct, quantity: number) {
 
 const totalPrice = computed(() => {
     if (!data.value) return 0
-    return calculateTotalPrice(data.value.products)
+    return calculateTotalPrice(data.value.items)
 })
 
 </script>
@@ -100,7 +100,7 @@ const totalPrice = computed(() => {
         <div class="card mb-5">
             <div class="card-body">
                 <p class="card-text d-flex justify-content-between">
-                <div>
+                <div v-if="data.user && data.user.address">
                     <strong>Shipping:</strong> Address: {{ addressToString(data.user.address) }}
                 </div>
 
@@ -121,26 +121,26 @@ const totalPrice = computed(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in data.products" :key="item.product.id">
+                <tr v-for="(item, index) in data.items" :key="item.id">
                     <th scope="row">{{ index + 1 }}</th>
-                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product!.name }}</td>
                     <td>
                         <button class="btn btn-primary"
-                            @click="changeQuantity(item.product, item.quantity - 1)">-</button>
+                            @click="changeQuantity(item.product!, item.quantity - 1)">-</button>
                         {{ item.quantity }}
                         <button class="btn btn-primary"
-                            @click="changeQuantity(item.product, item.quantity + 1)">+</button>
+                            @click="changeQuantity(item.product!, item.quantity + 1)">+</button>
                     </td>
-                    <td>{{ (item.product.price).toFixed(2) }}</td>
-                    <td>{{ (item.product.price * item.quantity).toFixed(2) }}</td>
+                    <td>{{ (item.product!.price).toFixed(2) }}</td>
+                    <td>{{ (item.product!.price * item.quantity).toFixed(2) }}</td>
                     <td>
-                        <button class="btn btn-danger" @click="removeAll(item.product)">Remove</button>
+                        <button class="btn btn-danger" @click="removeAll(item.product!)">Remove</button>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="data.products.length > 0">
+        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="data.items.length > 0">
             <h5 class="card-title">Total: {{ totalPrice.toFixed(2) }}</h5>
             <button class="btn btn-primary" @click="createOrder">Pay Now</button>
         </div>

@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
   const user = await serviceKit.authService.getUserFromToken(token);
 
   console.log("filtering orders by status =", query.status);
+  // console.log("user =", user);
 
   const orderStatus = stringToOrderStatus(query.status as string);
 
@@ -26,6 +27,8 @@ export default defineEventHandler(async (event) => {
     status: orderStatus,
     user,
   });
+
+  // console.log("found", orders.length, "orders");
 
   return orders;
 });

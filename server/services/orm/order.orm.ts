@@ -3,6 +3,7 @@ import {
   DatabaseSingleton,
   Order,
   OrderItem,
+  Product,
   User,
 } from "~/server/databases/database";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
@@ -38,8 +39,9 @@ export class OrderServiceORM implements IOrderService {
           user: cart.user,
           status: OrderStatus.WaitForPayment,
           totalPrice: calculateTotalPrice(cart.items),
-          userId: user.id,
+          UserId: user.id,
           AddressId: address.id,
+          addressId: address.id,
         },
         { transaction }
       );
@@ -49,6 +51,7 @@ export class OrderServiceORM implements IOrderService {
           {
             product: item.product,
             quantity: item.quantity,
+            productId: item.product!.id,
             ProductId: item.product!.id,
             OrderId: order.id,
           },
@@ -77,13 +80,15 @@ export class OrderServiceORM implements IOrderService {
   }
 
   async payForOrder(id: number): Promise<IOrder> {
-    const order = await this.getOrder(id);
+    const order = (await this.getOrder(id)) as Order;
     if (!order) {
       throw new Error("Order not found");
     }
 
-    // move order status to next stage => preparing
+    // update order status to preparing
     order.status = OrderStatus.Preparing;
+    await order.save();
+
     return order;
   }
 
@@ -114,10 +119,25 @@ export class OrderServiceORM implements IOrderService {
       whereOpts.userId = opts.user.id;
     }
 
-    return Order.findAll({
+    const orders = await Order.findAll({
       where: whereOpts,
-      include: [User, Address],
+      include: [
+        { model: User },
+        { model: Address, as: "address" },
+        {
+          model: OrderItem,
+          include: [
+            {
+              model: Product,
+              as: "product",
+            },
+          ],
+          as: "items",
+        },
+      ],
     });
+
+    return orders;
   }
 
   async updateOrderStatus(id: number, status: OrderStatus): Promise<IOrder> {

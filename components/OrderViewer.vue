@@ -5,8 +5,6 @@ import type { IOrder } from "~/types/entity";
 
 const userInject = inject(KEY_USER, undefined);
 
-let orders: Ref<IOrder[]> = ref([]);
-
 const currentTab = ref(OrderStatus.WaitForPayment);
 
 const tabs = [
@@ -22,27 +20,25 @@ function changeTab(newTab: OrderStatus) {
   currentTab.value = newTab;
 }
 
-const fetchResult = await useFetch(
-  () => `/api/orders/all?status=${currentTab.value}`,
-  {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + (userInject ? userInject.token.value : ""),
-    },
-    transform: (data) => data as IOrder[],
-    watch: [currentTab],
-  }
-);
-
-console.log("fetchResult.data.value", fetchResult.data.value);
-if (fetchResult.data.value !== null) {
-  orders.value = fetchResult.data.value as any as IOrder[];
-}
+const {
+  data: orders,
+  error,
+  pending,
+} = await useFetch(() => `/api/orders/all?status=${currentTab.value}`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + (userInject ? userInject.token.value : ""),
+  },
+  transform: (data) => {
+    return data as IOrder[];
+  },
+  watch: [currentTab],
+});
 </script>
 
 <template>
-  <div v-if="userInject">
+  <div v-if="userInject && userInject.token.value">
     <ul class="nav nav-pills nav-fill">
       <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.status">
         <a
@@ -56,9 +52,17 @@ if (fetchResult.data.value !== null) {
       </li>
     </ul>
 
-    <!-- <div v-for="(order, index) in orders" :key="order.id" class="mt-5">
-      <OrderViewerDetail :order="order" />
-    </div> -->
+    <div v-if="pending">
+      <p class="text-center">Loading...</p>
+    </div>
+    <div v-else-if="error">
+      <p class="text-center">Error: {{ error.message }}</p>
+    </div>
+    <div v-else>
+      <div v-for="(order, index) in orders" :key="order.id" class="mt-5">
+        <OrderViewerDetail :order="order" />
+      </div>
+    </div>
   </div>
   <div v-else>
     <p class="text-center">Please login to see your orders.</p>
