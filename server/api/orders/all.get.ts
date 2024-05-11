@@ -1,7 +1,8 @@
 import { ServiceKit } from "~/server/services/service.kit";
+import { stringToOrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {
@@ -10,9 +11,21 @@ export default defineEventHandler(async (event) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const query = getQuery(event);
+  if (!query.status) {
+    return new Response("Missing status query parameter", { status: 400 });
+  }
+
   const user = await serviceKit.authService.getUserFromToken(token);
 
-  const orders = await serviceKit.orderService.getOrdersForUser(user.id);
+  console.log("filtering orders by status =", query.status);
+
+  const orderStatus = stringToOrderStatus(query.status as string);
+
+  const orders = await serviceKit.orderService.filter({
+    status: orderStatus,
+    user,
+  });
 
   return orders;
 });

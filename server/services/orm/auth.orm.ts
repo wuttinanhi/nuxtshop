@@ -1,46 +1,11 @@
 import { UserRole } from "@/shared/enums/userrole.enum";
-import type { IAddress, IUser } from "@/types/entity";
+import type { IUser, IUserRegister } from "@/types/entity";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Address, DatabaseSingleton, User } from "~/server/databases/database";
 import type { IAuthService } from "../defs/auth.service";
 
 export class AuthServiceORM implements IAuthService {
-  public async createAdminUser() {
-    console.log("Checking for admin user");
-
-    let adminUser = await User.findOne({
-      where: { email: "admin@example.com" },
-    });
-
-    if (adminUser) return;
-
-    console.log("Creating admin user");
-
-    const adminAddress: IAddress = {
-      address: "123 Admin St",
-      city: "Adminville",
-      state: "AD",
-      zip: "12345",
-    };
-
-    await this.register({
-      firstName: "Admin",
-      lastName: "User",
-      email: "admin@example.com",
-      password: "admin-password",
-      role: UserRole.ADMIN,
-      address: adminAddress,
-    });
-
-    console.log("Admin user created");
-  }
-
-  constructor() {
-    // create a default admin user if one doesn't exist
-    this.createAdminUser();
-  }
-
   private static getJWTSecret(): string {
     return process.env.JWT || "secret";
   }
@@ -71,6 +36,7 @@ export class AuthServiceORM implements IAuthService {
   public async login(email: string, password: string): Promise<string | null> {
     const user = await User.findOne({
       where: { email },
+      attributes: { include: ["password"] },
     });
 
     if (!user) {
@@ -87,29 +53,42 @@ export class AuthServiceORM implements IAuthService {
     return token;
   }
 
-  public async register(user: IUser): Promise<void> {
+  public async register(user: IUserRegister): Promise<void> {
     if (!user.password) {
       throw new Error("User password is required when registering");
     }
 
-    const transaction = await DatabaseSingleton.getDatabase().transaction();
-    let newUser: User;
+    if (!user.address) {
+      throw new Error("User address is required when registering");
+    }
 
+    const transaction = await DatabaseSingleton.getDatabase().transaction();
     try {
-      const userAddress = await Address.create(user.address, { transaction });
       const hashedPassword = this.hashPassword(user.password);
 
-      newUser = await User.create(
+      const newUser = await User.create(
         {
           firstName: "Admin",
           lastName: "User",
           email: "admin@example.com",
           password: hashedPassword,
           role: UserRole.ADMIN,
-          address: userAddress,
         },
         { transaction }
       );
+
+      const userAddress = await Address.create(
+        {
+          addressText: user.address.addressText,
+          city: user.address.city,
+          state: user.address.state,
+          zip: user.address.zip,
+          UserId: newUser.id,
+        },
+        { transaction }
+      );
+
+      console.log(`Address created with id ${userAddress.id}`);
 
       transaction.commit();
 

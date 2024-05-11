@@ -4,7 +4,6 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { IUser } from "~/types/entity";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token.value;
 
 const formMode = ref("login");
 
@@ -13,7 +12,7 @@ const userForm = ref({
   email: "",
   password: "",
   address: {
-    address: "",
+    addressText: "",
     city: "",
     state: "",
     zip: "",
@@ -39,7 +38,7 @@ async function loginSubmit() {
 
     localStorage.setItem("token", res.token);
 
-    await navigateTo("/");
+    await navigateTo("/", { replace: true });
   } catch (error) {
     alert("Error logging in");
   }
@@ -67,9 +66,7 @@ async function logout() {
 <template>
   <h1 class="mb-5">Account</h1>
 
-  TOKEN: {{ injectUser === undefined }} {{ injectUser?.token }}
-
-  <div v-if="injectUser && injectUser.token">
+  <div v-if="injectUser && injectUser.token.value">
     <h3>Your Info</h3>
 
     <UserInfoForm :user="userForm" />
@@ -84,9 +81,10 @@ async function logout() {
     <form @submit.prevent="null">
       <div>
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label"
-            >Email address</label
-          >
+          <label for="exampleInputEmail1" class="form-label">
+            Email address
+          </label>
+
           <input
             type="email"
             class="form-control"
@@ -112,34 +110,24 @@ async function logout() {
         <UserInfoForm :user="userForm" />
       </div>
 
-      <div>
-        <div v-if="formMode === 'login'" class="d-flex gap-2 mt-5">
-          <button type="submit" class="btn btn-primary" @click="loginSubmit">
-            Login
-          </button>
+      <div v-if="formMode === 'login'" class="d-flex gap-2 mt-5">
+        <button type="submit" class="btn btn-primary" @click="loginSubmit">
+          Login
+        </button>
 
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            @click="changeMode"
-          >
-            Don't have an account?
-          </button>
-        </div>
+        <button type="button" class="btn btn-outline-dark" @click="changeMode">
+          Don't have an account?
+        </button>
+      </div>
 
-        <div v-else class="d-flex gap-2 mt-5">
-          <button type="submit" class="btn btn-primary" @click="registerSubmit">
-            Register
-          </button>
+      <div v-else class="d-flex gap-2 mt-5">
+        <button type="submit" class="btn btn-primary" @click="registerSubmit">
+          Register
+        </button>
 
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            @click="changeMode"
-          >
-            Back to login
-          </button>
-        </div>
+        <button type="button" class="btn btn-outline-dark" @click="changeMode">
+          Back to login
+        </button>
       </div>
     </form>
   </div>

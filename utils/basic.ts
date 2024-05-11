@@ -2,7 +2,7 @@ import type { IAddress, IOrderItem } from "@/types/entity";
 
 export function addressToString(address: IAddress) {
   if (!address) return "<no address>";
-  return `${address.address} ${address.city} ${address.state} ${address.zip}`;
+  return `${address.addressText} ${address.city} ${address.state} ${address.zip}`;
 }
 
 export function buildAuthHeader() {
@@ -14,6 +14,6 @@ export function buildAuthHeader() {
 
 export function calculateTotalPrice(products: IOrderItem[]) {
   return products.reduce((acc, item) => {
-    return acc + item.product.price * item.quantity;
+    return acc + item.product!.price * item.quantity;
   }, 0);
 }

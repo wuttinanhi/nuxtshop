@@ -1,92 +1,64 @@
 <script setup lang="ts">
 import { KEY_USER } from "~/shared/enums/keys";
+import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import type { IOrder } from "~/types/entity";
 
-const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token.value;
+const userInject = inject(KEY_USER, undefined);
 
-let data: Ref<IOrder[]> = ref([]);
+let orders: Ref<IOrder[]> = ref([]);
 
-const currentTab = ref(0);
+const currentTab = ref(OrderStatus.WaitForPayment);
+
 const tabs = [
-  { title: "Payment" },
-  { title: "Preparing" },
-  { title: "Shipping" },
-  { title: "Delivered" },
-  { title: "Canceled" },
+  { title: "Payment", status: OrderStatus.WaitForPayment },
+  { title: "Preparing", status: OrderStatus.Preparing },
+  { title: "Shipping", status: OrderStatus.Shipping },
+  { title: "Delivered", status: OrderStatus.Delivered },
+  { title: "Canceled", status: OrderStatus.Canceled },
 ];
 
-function changeTab(index: number) {
-  currentTab.value = index;
+function changeTab(newTab: OrderStatus) {
+  console.log("Tab changed to: ", newTab);
+  currentTab.value = newTab;
 }
 
-if (token) {
-  const fetchResult = await useFetch("/api/orders/all", {
+const fetchResult = await useFetch(
+  () => `/api/orders/all?status=${currentTab.value}`,
+  {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + (userInject ? userInject.token.value : ""),
     },
     transform: (data) => data as IOrder[],
-  });
-  if (fetchResult.data) {
-    data.value = fetchResult.data as unknown as IOrder[];
+    watch: [currentTab],
   }
-}
+);
 
-function numberToStatus(number: number) {
-  switch (number) {
-    case 0:
-      return "wait_for_payment";
-    case 1:
-      return "preparing";
-    case 2:
-      return "shipping";
-    case 3:
-      return "delivered";
-    case 4:
-      return "canceled";
-    default:
-      return "wait_for_payment";
-  }
+console.log("fetchResult.data.value", fetchResult.data.value);
+if (fetchResult.data.value !== null) {
+  orders.value = fetchResult.data.value as any as IOrder[];
 }
-
-function filterOrders() {
-  if (!data.value) return [];
-  const status = numberToStatus(currentTab.value);
-  return data.value.filter((order) => order.status === status);
-}
-
-const showingOrders = computed(() => filterOrders());
 </script>
 
 <template>
-  <div v-if="injectUser">
+  <div v-if="userInject">
     <ul class="nav nav-pills nav-fill">
-      <li class="nav-item" v-for="(tab, index) in tabs" :key="index">
+      <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.status">
         <a
           class="nav-link"
-          :class="{ active: currentTab === index }"
+          :class="{ active: currentTab === tab.status }"
           href="#"
-          @click="changeTab(index)"
+          @click="changeTab(tab.status)"
         >
           {{ tab.title }}
         </a>
       </li>
     </ul>
 
-    <div
-      v-for="(order, index) in showingOrders"
-      :key="order.id"
-      class="mt-5"
-      v-if="showingOrders.length >= 1"
-    >
+    <!-- <div v-for="(order, index) in orders" :key="order.id" class="mt-5">
       <OrderViewerDetail :order="order" />
-    </div>
-
-    <div v-else style="margin-top: 10%">
-      <p class="text-center">No orders. (Let's buy something!)</p>
-    </div>
+    </div> -->
   </div>
   <div v-else>
     <p class="text-center">Please login to see your orders.</p>

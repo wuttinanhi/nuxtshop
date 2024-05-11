@@ -3,6 +3,6 @@
 </script>
 <template>
   <ClientOnly>
-    <AccountView />
+    <AccountViewer />
   </ClientOnly>
 </template>

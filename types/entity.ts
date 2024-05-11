@@ -13,40 +13,45 @@ export interface IProduct {
 
 export interface IOrderItem {
   id?: number;
-  product: IProduct;
+  product?: IProduct;
+  productId: number;
   quantity: number;
 }
 
 export interface IAddress {
   id?: number;
-  address: string;
+  addressText: string;
   city: string;
   state: string;
   zip: string;
 }
 
 export interface IUser {
-  value: IUser;
   id?: number;
   firstName: string;
   lastName: string;
   email: string;
-  address: IAddress;
+  addressId: number;
+  address?: IAddress;
   role: UserRole;
   password?: string;
 }
 
+export type IUserRegister = Omit<IUser, "id" | "addressId">;
+
 export interface ICart {
   id?: number;
-  user: IUser;
-  products: IOrderItem[];
+  userId: number;
+  user?: IUser;
+  items: IOrderItem[];
 }
 
 export interface IOrder {
   id?: number;
   user: IUser;
   items: IOrderItem[];
-  address: IAddress;
+  addressId: number;
+  address?: IAddress;
   totalPrice: number;
   status: OrderStatus;
 }

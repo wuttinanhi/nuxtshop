@@ -1,14 +1,7 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import { UserRole } from "~/shared/enums/userrole.enum";
-import {
-  IAddress,
-  ICart,
-  IOrder,
-  IOrderItem,
-  IProduct,
-  IUser,
-} from "~/types/entity";
+import { IOrderItem } from "~/types/entity";
 
 export class DatabaseSingleton {
   declare static datasource: Sequelize;
@@ -28,17 +21,6 @@ export class DatabaseSingleton {
     return DatabaseSingleton.datasource;
   }
 
-  public static async syncRelations() {
-    console.log("Syncing relations");
-    await Address.sync({ alter: true });
-    await User.sync({ alter: true });
-
-    User.hasMany(Address);
-    Address.belongsTo(User);
-
-    console.log("Relations synced");
-  }
-
   static createSQLite() {
     const sequelize = new Sequelize({
       dialect: "sqlite",
@@ -48,11 +30,49 @@ export class DatabaseSingleton {
 
     return sequelize;
   }
+
+  public static async sync() {
+    console.log("Synchronizing models...");
+
+    await this.datasource.drop();
+    console.log("All tables dropped!");
+
+    Address.belongsTo(User);
+
+    User.hasOne(Address);
+    User.hasMany(Order);
+    User.hasOne(Cart);
+    User.hasMany(Order);
+
+    Cart.belongsTo(User);
+    Cart.hasMany(OrderItem);
+
+    Order.belongsTo(User);
+    Order.belongsTo(Address);
+    Order.hasMany(OrderItem);
+
+    OrderItem.belongsTo(Product);
+    OrderItem.belongsTo(Order);
+    OrderItem.belongsTo(Cart);
+
+    await this.datasource.sync({ force: true });
+    console.log("All models were synchronized successfully.");
+
+    console.log("Synchronizing models done!");
+
+    // await Address.sync({ force: true });
+    // await Address.sync({ force: true });
+    // await User.sync({ force: true });
+    // await Product.sync({ force: true });
+    // await OrderItem.sync({ force: true });
+    // await Cart.sync({ force: true });
+    // await Order.sync({ force: true });
+  }
 }
 
-export class Address extends Model<IAddress> implements IAddress {
+export class Address extends Model {
   declare id: number;
-  declare address: string;
+  declare addressText: string;
   declare city: string;
   declare state: string;
   declare zip: string;
@@ -65,7 +85,7 @@ Address.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    address: {
+    addressText: {
       type: new DataTypes.STRING(128),
       allowNull: true,
     },
@@ -88,24 +108,17 @@ Address.init(
   }
 );
 
-Address.sync({ force: true });
-
-export class User extends Model<IUser> {
+export class User extends Model {
   declare id: number;
   declare firstName: string;
   declare lastName: string;
   declare email: string;
   declare password: string;
-  declare address: Address;
+  declare addressId: number;
   declare role: UserRole;
 
-  // return as JSON without password
-  // toJSON() {
-  //   return {
-  //     ...this.get(),
-  //     password: undefined,
-  //   };
-  // }
+  // associations
+  declare address: Address;
 }
 
 User.init(
@@ -135,20 +148,21 @@ User.init(
       type: new DataTypes.STRING(128),
       allowNull: false,
     },
-    address: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // addressId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
   },
   {
     tableName: "users",
     sequelize: DatabaseSingleton.getDatabase(),
+    defaultScope: {
+      attributes: { exclude: ["password"] },
+    },
   }
 );
 
-User.sync({ force: true });
-
-export class Product extends Model<IProduct> {
+export class Product extends Model {
   declare id: number;
   declare name: string;
   declare description: string;
@@ -186,9 +200,7 @@ Product.init(
   }
 );
 
-Product.sync({ force: true });
-
-export class OrderItem extends Model<IOrderItem> implements IOrderItem {
+export class OrderItem extends Model implements IOrderItem {
   declare id: number;
   declare productId: number;
   declare quantity: number;
@@ -204,10 +216,10 @@ OrderItem.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    product: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // productId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -219,15 +231,13 @@ OrderItem.init(
   }
 );
 
-OrderItem.sync({ force: true });
-
-export class Cart extends Model<ICart> {
+export class Cart extends Model {
   declare id: number;
   declare userId: number;
 
   // associations
   declare user: User;
-  declare products: OrderItem[];
+  declare items: OrderItem[];
 }
 
 Cart.init(
@@ -237,14 +247,10 @@ Cart.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    products: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-    user: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // userId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
   },
   {
     tableName: "carts",
@@ -252,12 +258,7 @@ Cart.init(
   }
 );
 
-Cart.belongsTo(User, { foreignKey: "userId", as: "F_userId" });
-Cart.hasMany(OrderItem, { foreignKey: "cartId", as: "F_products" });
-
-Cart.sync({ force: true });
-
-export class Order extends Model<IOrder> implements IOrder {
+export class Order extends Model {
   declare id: number;
   declare userId: number;
   declare addressId: number;
@@ -277,14 +278,14 @@ Order.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    user: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    address: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // userId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
+    // addressId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
     totalPrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -293,17 +294,9 @@ Order.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    items: {
-      type: DataTypes.JSON,
-      allowNull: false,
-    },
   },
   {
     tableName: "orders",
     sequelize: DatabaseSingleton.getDatabase(),
   }
 );
-
-Order.belongsTo(User, { foreignKey: "userId", as: "f_user" });
-
-Order.sync({ force: true });

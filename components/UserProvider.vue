@@ -6,8 +6,8 @@ import type { IUser } from "~/types/entity";
 const user: Ref<IUser | undefined> = ref(undefined);
 const token: Ref<string | undefined> = ref(undefined);
 
-function setUser(user: IUser) {
-  user.value = user;
+function setUser(newUser: IUser) {
+  user.value = newUser;
 }
 
 try {
@@ -17,8 +17,12 @@ try {
     user.value = userData;
     token.value = ClientAuthService.getToken();
 
-    console.log("UserLoader > User loaded", user.value);
-    console.log("UserLoader > Token:", token.value);
+    console.log(
+      "UserLoader > User loaded: ",
+      user.value?.id,
+      user.value?.firstName
+    );
+    // console.log("UserLoader > Token:", token.value.substring(0, 16));
   }
 } catch (error) {
   console.log("No user logged in:", (error as Error).message);
@@ -31,5 +35,5 @@ provide(KEY_USER, {
 });
 </script>
 <template>
-  <div></div>
+  <slot />
 </template>

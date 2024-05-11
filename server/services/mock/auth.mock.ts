@@ -1,4 +1,4 @@
-import type { IUser } from "@/types/entity";
+import type { IUser, IUserRegister } from "@/types/entity";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import type { IAuthService } from "../defs/auth.service";
 
@@ -14,12 +14,13 @@ export class AuthServiceMock implements IAuthService {
       firstName: "John",
       lastName: "Doe",
       address: {
-        address: "123 Main St",
+        addressText: "123 Main St",
         city: "Springfield",
         state: "IL",
         zip: "62701",
       },
       role: UserRole.ADMIN,
+      addressId: 1,
     };
   }
 
@@ -28,6 +29,10 @@ export class AuthServiceMock implements IAuthService {
       return "valid-token";
     }
     return null;
+  }
+
+  public async register(user: IUserRegister): Promise<void> {
+    return;
   }
 
   public async AUTH_GUARD(event: any) {

@@ -1,7 +1,7 @@
 import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   if (event.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });

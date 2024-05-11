@@ -2,7 +2,7 @@ import { ServiceKit } from "~/server/services/service.kit";
 import { stringToOrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {

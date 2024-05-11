@@ -20,7 +20,7 @@ export class ProductServiceMock implements IProductService {
 
     // set LATEST_PRODUCT_ID to the last product id
     ProductServiceMock.LATEST_PRODUCT_ID =
-      ProductServiceMock.products[ProductServiceMock.products.length - 1].id;
+      ProductServiceMock.products[ProductServiceMock.products.length - 1].id!;
 
     console.log("Products loaded");
   }

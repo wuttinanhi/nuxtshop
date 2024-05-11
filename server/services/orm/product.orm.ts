@@ -1,43 +1,12 @@
 import type { IProductService } from "@/server/services/defs/product.service";
 import type { IProduct } from "@/types/entity";
-import fs from "fs";
 import { Op } from "sequelize";
-import { DatabaseSingleton, Product } from "~/server/databases/database";
+import { Product } from "~/server/databases/database";
 
 export class ProductServiceORM implements IProductService {
-  public async init() {
-    console.log("Loading products");
-    let rawdata = fs.readFileSync(
-      `${process.cwd()}/public/static/products.json`,
-      "utf8"
-    );
-
-    // loop through the products and save them to the database
-    const products: IProduct[] = JSON.parse(rawdata);
-    const transaction = await DatabaseSingleton.getDatabase().transaction();
-
-    try {
-      for (const product of products) {
-        const newProduct = await Product.create(product, { transaction });
-        console.log(`added product ${product.name}`);
-      }
-
-      transaction.commit();
-    } catch (error) {
-      console.error("Error loading products", error);
-      transaction.rollback();
-    }
-
-    console.log("Products loaded");
+  init(): Promise<void> {
+    throw new Error("Method not implemented.");
   }
-
-  constructor() {
-    console.log("ProductServiceORM initialized");
-
-    // initialize the products
-    this.init();
-  }
-
   public async createProduct(product: IProduct): Promise<IProduct> {
     const newProduct = Product.build(product);
     return newProduct.save();
