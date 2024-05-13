@@ -36,9 +36,10 @@ async function addToCart(product: IProduct) {
     <div class="col-xs-12 col-md-4" v-for="product in data" :key="product.id">
       <div class="card">
         <img
-          src="https://dummyjson.com/image/500/f5f5f5"
+          :src="product.imageURL"
           class="card-img"
           alt="{{ product.imageURL }}"
+          style="max-height: 300px; object-fit: cover; max-width: 100%"
         />
 
         <div class="card-body">
