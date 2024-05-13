@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import AdminOrderViewer from '~/components/AdminOrderViewer.vue';
-
-// ...
+import { UserRole } from "~/shared/enums/userrole.enum";
 </script>
 <template>
-    <ClientOnly>
-        <h1>Admin</h1>
-        <br />
+  <ClientOnly>
+    <h2>Admin Orders Management</h2>
+    <br />
 
-        <AdminOrderViewer />
-    </ClientOnly>
+    <GenericOrderViewer :mode="UserRole.ADMIN" />
+  </ClientOnly>
 </template>

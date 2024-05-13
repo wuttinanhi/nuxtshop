@@ -1,11 +1,18 @@
 <script setup lang="ts">
+import { KEY_USER } from "~/shared/enums/keys";
+import { OrderStatus, orderStatusToHuman } from "~/shared/enums/orderstatus.enum";
+import { UserRole } from "~/shared/enums/userrole.enum";
 import type { IOrder } from "~/types/entity";
 
 interface OrderViewerDetailProps {
   order: IOrder;
+  mode: UserRole;
 }
 
 const props = defineProps<OrderViewerDetailProps>();
+
+const userInject = inject(KEY_USER);
+const token = userInject?.token.value;
 
 async function payOrder(order: IOrder) {
   try {
@@ -23,8 +30,34 @@ async function payOrder(order: IOrder) {
     alert("Error when paying order");
   }
 }
-</script>
 
+function updateOrderStatus(orderId: any, status: OrderStatus) {
+  // if canceled prompt confirmation
+  if (status === "canceled") {
+    const isConfirmed = confirm("Are you sure you want to cancel this order?");
+    if (!isConfirmed) return;
+  }
+
+  const result = $fetch(`/api/admin/orders/${orderId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      status: status,
+    }),
+    onResponse: (ctx) => {
+      if (ctx.response.status === 200) {
+        console.log("Order updated to shipping");
+      }
+    },
+  });
+
+  console.log(result);
+  props.order.status = status;
+}
+</script>
 <template>
   <div class="card">
     <div class="card-header">
@@ -32,43 +65,48 @@ async function payOrder(order: IOrder) {
     </div>
     <div class="card-body">
       <p class="card-text mb-3">
+      <div v-if="order.address">
         <strong>Shipping:</strong> Address: {{ addressToString(order.address) }}
+      </div>
+      <div v-else>
+        <strong>Shipping:</strong> Address: Not available
+      </div>
+      <strong>Status:</strong> {{ orderStatusToHuman(order.status) }}
       </p>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Product</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Price</th>
-            <th scope="col">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in order.items" :key="item.product.id">
-            <th scope="row">{{ index }}</th>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.product.price }}</td>
-            <td>{{ item.product.price * item.quantity }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <OrderItemTable :items="order.items" />
     </div>
     <div class="card-footer text-muted">
       <div class="d-flex justify-content-between">
         <div>
-          <button
-            class="btn btn-primary"
-            v-show="order.status === 'wait_for_payment'"
-            @click="payOrder(order)"
-          >
-            Pay Now
-          </button>
+          <div v-if="$props.mode === UserRole.USER">
+            <button class="btn btn-primary" v-show="order.status === 'wait_for_payment'" @click="payOrder(order)" >
+              Pay Now
+            </button>
+          </div>
+
+          <div v-if="$props.mode === UserRole.ADMIN" class="d-flex gap-1">
+            <button class="btn btn-primary" @click="updateOrderStatus(order.id, OrderStatus.Shipping)" v-if="order.status === 'preparing'">
+              Update to Shipping
+            </button>
+            <button class="btn btn-danger" @click="updateOrderStatus(order.id, OrderStatus.Canceled)" v-if="order.status !== 'canceled'">
+              Cancel
+            </button>
+
+            <GenericDialog :modal-options="{
+              modalID: 'orderDetailModal',
+              modalTitle: 'Order Detail',
+              openbuttonLabel: 'View',
+              modalSize: 'xl'
+            }">
+              <OrderItemTable :items="order.items"/>
+            </GenericDialog>
+          </div>
         </div>
 
-        <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
+        <div>
+          <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
+        </div>
       </div>
     </div>
   </div>

@@ -104,18 +104,32 @@ export class OrderServiceORM implements IOrderService {
       include: [
         { model: User, as: "user" },
         { model: Address, as: "address" },
-        { model: OrderItem, as: "items" },
+        {
+          model: OrderItem,
+          as: "items",
+          include: [{ model: Product, as: "product" }],
+        },
       ],
     });
   }
 
   async filterOrdersByStatus(status: OrderStatus): Promise<IOrder[]> {
+    let whereOpts = {} as any;
+
+    if (status && status !== OrderStatus.All) {
+      whereOpts.status = status;
+    }
+
     return Order.findAll({
-      where: { status: status },
+      where: whereOpts,
       include: [
         { model: User, as: "user" },
         { model: Address, as: "address" },
-        { model: OrderItem, as: "items" },
+        {
+          model: OrderItem,
+          as: "items",
+          include: [{ model: Product, as: "product" }],
+        },
       ],
     });
   }
@@ -123,7 +137,7 @@ export class OrderServiceORM implements IOrderService {
   async filter(opts: IOrderFilter): Promise<IOrder[]> {
     let whereOpts = {} as any;
 
-    if (opts.status) {
+    if (opts.status && opts.status !== OrderStatus.All) {
       whereOpts.status = opts.status;
     }
 

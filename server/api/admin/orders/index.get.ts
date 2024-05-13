@@ -19,11 +19,6 @@ export default defineEventHandler(async (event) => {
   }
   const status = stringToOrderStatus(query.status as string);
 
-  if (status === "all") {
-    const orders = await serviceKit.orderService.getAllOrders();
-    return orders;
-  }
-
   const orders = await serviceKit.orderService.filterOrdersByStatus(status);
   return orders;
 });

@@ -2,7 +2,7 @@
 import type { IProduct } from "@/types/entity";
 import { KEY_USER } from "~/shared/enums/keys";
 import AdminProductDialog from "./AdminProductDialog.vue";
-import AdminOrderViewerRow from "./AdminProductViewerRow.vue";
+import AdminProductViewerRow from "./AdminProductViewerRow.vue";
 
 const injectUser = inject(KEY_USER, undefined);
 const token = injectUser?.token.value;
@@ -36,7 +36,7 @@ let { data } = await useFetch(() => `/api/admin/products`, {
         </tr>
       </thead>
       <tbody>
-        <AdminOrderViewerRow
+        <AdminProductViewerRow
           :product="product"
           :index="index"
           v-for="(product, index) in data"

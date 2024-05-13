@@ -25,3 +25,20 @@ export function stringToOrderStatus(status: string): OrderStatus {
       throw new Error("Invalid order status");
   }
 }
+
+export function orderStatusToHuman(status: OrderStatus): string {
+  switch (status) {
+    case OrderStatus.WaitForPayment:
+      return "Wait for payment";
+    case OrderStatus.Preparing:
+      return "Preparing";
+    case OrderStatus.Shipping:
+      return "Shipping";
+    case OrderStatus.Delivered:
+      return "Delivered";
+    case OrderStatus.Canceled:
+      return "Canceled";
+    case OrderStatus.All:
+      return "All";
+  }
+}

@@ -35,6 +35,7 @@ export interface IUser {
   address?: IAddress;
   role: UserRole;
   password?: string;
+  token?: string;
 }
 
 export type IUserRegister = Omit<IUser, "id" | "addressId">;
