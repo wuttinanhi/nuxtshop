@@ -13,11 +13,11 @@ export default defineEventHandler(async (event) => {
 
   const user = await serviceKit.authService.getUserFromToken(token);
 
-  const statusParam = getRouterParam(event, "status");
-  if (!statusParam) {
-    return new Response("Bad Request", { status: 400 });
+  const query = getQuery(event);
+  if (!query.status) {
+    return new Response("Missing status query parameter", { status: 400 });
   }
-  const status = stringToOrderStatus(statusParam);
+  const status = stringToOrderStatus(query.status as string);
 
   if (status === "all") {
     const orders = await serviceKit.orderService.getAllOrders();

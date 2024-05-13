@@ -27,17 +27,20 @@ function changeTab(newTab: OrderStatus) {
 }
 
 // getting admin order
-let { data } = await useFetch(() => `/api/admin/orders/${currentTab.value}`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + token || "",
-  },
-  transform: (data) => {
-    return data as IOrder[];
-  },
-  watch: [currentTab],
-});
+let { data } = await useFetch(
+  () => `/api/admin/orders?status=${currentTab.value}`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token || "",
+    },
+    transform: (data) => {
+      return data as IOrder[];
+    },
+    watch: [currentTab],
+  }
+);
 
 function updateOrderStatus(orderId: any, status: OrderStatus) {
   // if canceled prompt confirmation

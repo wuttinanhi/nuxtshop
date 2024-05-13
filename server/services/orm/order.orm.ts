@@ -36,10 +36,10 @@ export class OrderServiceORM implements IOrderService {
 
       const order = await Order.create(
         {
-          user: cart.user,
           status: OrderStatus.WaitForPayment,
           totalPrice: calculateTotalPrice(cart.items),
           UserId: user.id,
+          userId: user.id,
           AddressId: address.id,
           addressId: address.id,
         },
@@ -51,9 +51,10 @@ export class OrderServiceORM implements IOrderService {
           {
             product: item.product,
             quantity: item.quantity,
-            productId: item.product!.id,
             ProductId: item.product!.id,
+            productId: item.product!.id,
             OrderId: order.id,
+            orderId: order.id,
           },
           { transaction }
         );
@@ -99,12 +100,23 @@ export class OrderServiceORM implements IOrderService {
   }
 
   async getAllOrders(): Promise<IOrder[]> {
-    return Order.findAll();
+    return Order.findAll({
+      include: [
+        { model: User, as: "user" },
+        { model: Address, as: "address" },
+        { model: OrderItem, as: "items" },
+      ],
+    });
   }
 
   async filterOrdersByStatus(status: OrderStatus): Promise<IOrder[]> {
     return Order.findAll({
       where: { status: status },
+      include: [
+        { model: User, as: "user" },
+        { model: Address, as: "address" },
+        { model: OrderItem, as: "items" },
+      ],
     });
   }
 
@@ -122,17 +134,12 @@ export class OrderServiceORM implements IOrderService {
     const orders = await Order.findAll({
       where: whereOpts,
       include: [
-        { model: User },
+        { model: User, as: "user" },
         { model: Address, as: "address" },
         {
           model: OrderItem,
-          include: [
-            {
-              model: Product,
-              as: "product",
-            },
-          ],
           as: "items",
+          include: [{ model: Product, as: "product" }],
         },
       ],
     });

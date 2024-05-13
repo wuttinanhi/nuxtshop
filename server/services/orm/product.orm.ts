@@ -8,7 +8,12 @@ export class ProductServiceORM implements IProductService {
     throw new Error("Method not implemented.");
   }
   public async createProduct(product: IProduct): Promise<IProduct> {
-    const newProduct = Product.build(product);
+    const newProduct = Product.build({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      imageURL: product.imageURL,
+    });
     return newProduct.save();
   }
 

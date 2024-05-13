@@ -37,23 +37,23 @@ export class DatabaseSingleton {
     await this.datasource.drop();
     console.log("All tables dropped!");
 
-    Address.belongsTo(User);
-
     User.hasOne(Address);
-    User.hasMany(Order);
-    User.hasOne(Cart);
-    User.hasMany(Order);
+    // Address.belongsTo(User);
 
-    Cart.belongsTo(User);
-    Cart.hasMany(OrderItem);
+    User.hasOne(Cart, { foreignKey: "userId" });
+    Cart.belongsTo(User, { as: "user" });
+    Cart.hasMany(OrderItem, { as: "items", foreignKey: "cartId" });
+    OrderItem.belongsTo(Cart, { as: "cart" });
 
-    Order.belongsTo(User);
-    Order.belongsTo(Address, { as: "address" });
-    Order.hasMany(OrderItem, { as: "items" });
+    User.hasMany(Order, { foreignKey: "userId" });
+    Order.belongsTo(User, { as: "user", foreignKey: "userId" });
+    Order.belongsTo(Address, { as: "address", foreignKey: "addressId" });
 
+    Order.hasMany(OrderItem, { as: "items", foreignKey: "orderId" });
+    OrderItem.belongsTo(Order, { as: "order" });
+
+    Product.hasMany(OrderItem, { foreignKey: "productId" });
     OrderItem.belongsTo(Product, { as: "product" });
-    OrderItem.belongsTo(Order);
-    OrderItem.belongsTo(Cart);
 
     await this.datasource.sync({ force: true });
     console.log("All models were synchronized successfully.");
