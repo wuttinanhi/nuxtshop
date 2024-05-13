@@ -57,6 +57,26 @@ function updateOrderStatus(orderId: any, status: OrderStatus) {
   console.log(result);
   props.order.status = status;
 }
+
+async function confirmReceived(order: IOrder) {
+  // prompt confirmation
+  const isConfirmed = confirm("Are you sure you received this order?");
+  if (!isConfirmed) return;
+
+  const result = await $fetch(`/api/orders/received/${order.id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      status: status,
+    })
+  });
+
+  console.log(result);
+  props.order.status = OrderStatus.Delivered;
+}
 </script>
 <template>
   <div class="card">
@@ -80,8 +100,12 @@ function updateOrderStatus(orderId: any, status: OrderStatus) {
       <div class="d-flex justify-content-between">
         <div>
           <div v-if="$props.mode === UserRole.USER">
-            <button class="btn btn-primary" v-show="order.status === 'wait_for_payment'" @click="payOrder(order)" >
+            <button class="btn btn-primary" v-show="order.status ===  OrderStatus.WaitForPayment" @click="payOrder(order)" >
               Pay Now
+            </button>
+
+            <button class="btn btn-success" v-show="order.status === OrderStatus.Shipping" @click="confirmReceived(order)" >
+              Confirm Received
             </button>
           </div>
 
@@ -89,6 +113,7 @@ function updateOrderStatus(orderId: any, status: OrderStatus) {
             <button class="btn btn-primary" @click="updateOrderStatus(order.id, OrderStatus.Shipping)" v-if="order.status === 'preparing'">
               Update to Shipping
             </button>
+
             <button class="btn btn-danger" @click="updateOrderStatus(order.id, OrderStatus.Canceled)" v-if="order.status !== 'canceled'">
               Cancel
             </button>

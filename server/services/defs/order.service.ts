@@ -15,4 +15,5 @@ export interface IOrderService {
   filterOrdersByStatus(status: OrderStatus): Promise<IOrder[]>;
   filter(opts: IOrderFilter): Promise<IOrder[]>;
   updateOrderStatus(id: number, status: OrderStatus): Promise<IOrder>;
+  received(id: number): Promise<void>;
 }

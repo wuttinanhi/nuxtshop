@@ -77,7 +77,17 @@ export class OrderServiceORM implements IOrderService {
   }
 
   async getOrder(id: number): Promise<IOrder | null> {
-    return Order.findByPk(id);
+    return Order.findByPk(id, {
+      include: [
+        { model: User, as: "user" },
+        { model: Address, as: "address" },
+        {
+          model: OrderItem,
+          as: "items",
+          include: [{ model: Product, as: "product" }],
+        },
+      ],
+    });
   }
 
   async payForOrder(id: number): Promise<IOrder> {
@@ -131,6 +141,7 @@ export class OrderServiceORM implements IOrderService {
           include: [{ model: Product, as: "product" }],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
   }
 
@@ -156,6 +167,7 @@ export class OrderServiceORM implements IOrderService {
           include: [{ model: Product, as: "product" }],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
 
     return orders;
@@ -171,5 +183,15 @@ export class OrderServiceORM implements IOrderService {
     await order.save();
 
     return order;
+  }
+
+  async received(id: number): Promise<void> {
+    const order = (await this.getOrder(id)) as Order;
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    order.status = OrderStatus.Delivered;
+    await order.save();
   }
 }

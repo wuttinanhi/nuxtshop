@@ -4,6 +4,7 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { CartModifyRequest } from "~/types/general";
 
 const userInject = inject(KEY_USER);
+const token = userInject?.token.value;
 
 const { pending, data } = await useFetch("/api/products/all", {
   transform: (data) => data as IProduct[],
@@ -22,12 +23,12 @@ async function addToCart(product: IProduct) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + userInject?.token,
+      Authorization: "Bearer " + token,
     },
     body: JSON.stringify(modifyRequest),
   });
 
-  console.log("Result", result);
+  console.log(result);
 }
 </script>
 

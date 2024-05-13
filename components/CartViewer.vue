@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import type { ICart, IProduct } from "@/types/entity";
+import { KEY_USER } from "~/shared/enums/keys";
 import type { CartModifyRequest } from "~/types/general";
 
+const userInject = inject(KEY_USER);
+const token = userInject?.token.value;
+const user = userInject?.user.value;
 
 const cartVersion = ref(0)
 
 // getting user cart
-let { data } = await useFetch('/api/carts/me', {
+let { data: cart } = await useFetch('/api/carts/me', {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
@@ -18,13 +22,14 @@ let { data } = await useFetch('/api/carts/me', {
     watch: [cartVersion]
 })
 
+
 async function createOrder() {
     try {
         const result = await $fetch(`/api/orders/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
+                'Authorization': 'Bearer ' + token
             },
             onResponseError: (error) => {
                 alert(error.response._data.message)
@@ -89,19 +94,19 @@ async function changeQuantity(product: IProduct, quantity: number) {
 }
 
 const totalPrice = computed(() => {
-    if (!data.value) return 0
-    return calculateTotalPrice(data.value.items)
+    if (!cart.value) return 0
+    return calculateTotalPrice(cart.value.items)
 })
 
 </script>
 
 <template>
-    <div v-if="data">
+    <div v-if="cart">
         <div class="card mb-5">
             <div class="card-body">
                 <p class="card-text d-flex justify-content-between">
-                <div v-if="data.user && data.user.address">
-                    <strong>Shipping:</strong> Address: {{ addressToString(data.user.address) }}
+                <div v-if="cart.user && cart.user.address">
+                    <strong>Shipping:</strong> Address: {{ addressToString(cart.user.address) }}
                 </div>
 
                 <NuxtLink to="/account" class="btn btn-primary">Edit Shipping Address</NuxtLink>
@@ -121,7 +126,7 @@ const totalPrice = computed(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in data.items" :key="item.id">
+                <tr v-for="(item, index) in cart.items" :key="item.id">
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ item.product!.name }}</td>
                     <td>
@@ -140,7 +145,7 @@ const totalPrice = computed(() => {
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="data.items.length > 0">
+        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="cart.items.length > 0">
             <h5 class="card-title">Total: {{ totalPrice.toFixed(2) }}</h5>
             <button class="btn btn-primary" @click="createOrder">Pay Now</button>
         </div>
