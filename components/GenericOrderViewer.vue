@@ -17,7 +17,7 @@ const token = userInject?.token.value;
 
 const tabs = [
   { title: "All", status: OrderStatus.All },
-  { title: "Payment", status: OrderStatus.WaitForPayment },
+  { title: "Wait for Payment", status: OrderStatus.WaitForPayment },
   { title: "Preparing", status: OrderStatus.Preparing },
   { title: "Shipping", status: OrderStatus.Shipping },
   { title: "Delivered", status: OrderStatus.Delivered },
@@ -80,6 +80,10 @@ const {
         :mode="props.mode"
         v-if="currentTab === OrderStatus.All || currentTab === order.status"
       />
+    </div>
+
+    <div v-if="orders && orders.length === 0" class="mt-5">
+      <p class="text-center">No orders found</p>
     </div>
   </div>
 </template>

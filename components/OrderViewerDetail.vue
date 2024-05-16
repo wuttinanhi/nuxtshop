@@ -125,6 +125,9 @@ async function confirmReceived(order: IOrder) {
               modalSize: 'xl'
             }">
               <OrderItemTable :items="order.items"/>
+                <div class="d-flex flex-row-reverse align-items-center">
+                  <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
+                </div>
             </GenericDialog>
           </div>
         </div>
