@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { KEY_USER } from "~/shared/enums/keys";
+import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 
 const injectUser = inject(KEY_USER, undefined);
 const user = injectUser?.user.value;
+
+let cartInject = inject(KEY_CART, undefined);
+
+const cartTotalPrice = computed(() => {
+  return cartInject
+    ? `($${Number(cartInject.totalPrice.value).toFixed(2)})`
+    : "";
+});
 </script>
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -63,15 +71,17 @@ const user = injectUser?.user.value;
         </ul>
 
         <!-- <form class="d-flex px-1" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </form> -->
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form> -->
 
         <div class="d-flex px-1 gap-1 py-2">
           <NuxtLink to="/account" class="btn btn-primary">Account</NuxtLink>
-          <NuxtLink to="/cart" class="btn btn-primary" v-show="user">
-            🛒 Cart
-          </NuxtLink>
+          <ClientOnly>
+            <NuxtLink to="/cart" class="btn btn-primary" v-show="user">
+              🛒 Cart {{ cartTotalPrice }}
+            </NuxtLink>
+          </ClientOnly>
         </div>
       </div>
     </div>

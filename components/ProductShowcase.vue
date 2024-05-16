@@ -1,35 +1,15 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
-import { KEY_USER } from "~/shared/enums/keys";
-import type { CartModifyRequest } from "~/types/general";
+import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 
 const userInject = inject(KEY_USER);
 const token = userInject?.token.value;
 
+const cartInject = inject(KEY_CART, undefined);
+
 const { pending, data } = await useFetch("/api/products/all", {
   transform: (data) => data as IProduct[],
 });
-
-async function addToCart(product: IProduct) {
-  console.log("Add to cart", product);
-
-  const modifyRequest: CartModifyRequest = {
-    mode: "add",
-    productID: product.id!,
-    quantity: 1,
-  };
-
-  const result = await $fetch("/api/carts/modify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify(modifyRequest),
-  });
-
-  console.log(result);
-}
 </script>
 
 <template>
@@ -47,7 +27,10 @@ async function addToCart(product: IProduct) {
           <div class="text-center">
             <h3 class="card-title">{{ product.name }}</h3>
             <h5 class="card-text my-4">{{ product.price }}</h5>
-            <button class="btn btn-primary mt-3" @click="addToCart(product)">
+            <button
+              class="btn btn-primary mt-3"
+              @click="cartInject?.addToCart(product)"
+            >
               Add to cart
             </button>
           </div>

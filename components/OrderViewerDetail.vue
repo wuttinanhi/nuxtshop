@@ -91,7 +91,7 @@ async function confirmReceived(order: IOrder) {
       <div v-else>
         <strong>Shipping:</strong> Address: Not available
       </div>
-      <strong>Status:</strong> {{ orderStatusToHuman(order.status) }}
+        <strong>Status:</strong> {{ orderStatusToHuman(order.status) }}
       </p>
 
       <OrderItemTable :items="order.items" />
@@ -125,9 +125,10 @@ async function confirmReceived(order: IOrder) {
               modalSize: 'xl'
             }">
               <OrderItemTable :items="order.items"/>
-                <div class="d-flex flex-row-reverse align-items-center">
-                  <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
-                </div>
+
+              <div class="d-flex flex-row-reverse align-items-center">
+                <h5 class="card-title">Total: {{ order.totalPrice }}</h5>
+              </div>
             </GenericDialog>
           </div>
         </div>
