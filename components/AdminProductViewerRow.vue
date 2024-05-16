@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Product } from '~/types/general';
+import type { IProduct } from "@/types/entity";
 
 const props = defineProps({
     product: {
-        type: Object as () => Product,
+        type: Object as () => IProduct,
         required: true
     },
     index: {

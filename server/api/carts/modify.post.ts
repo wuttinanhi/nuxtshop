@@ -1,8 +1,8 @@
 import { ServiceKit } from "~/server/services/service.kit";
-import { CartModifyRequest } from "~/types/general";
+import type { CartModifyRequest } from "~/types/general";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {
@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
       await serviceKit.cartService.addToCart(user, {
         product: product,
         quantity: 1,
+        productId: product.id!,
       });
       break;
     case "remove":

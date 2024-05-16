@@ -1,8 +1,8 @@
 import { ServiceKit } from "~/server/services/service.kit";
-import { OrderStatusAdmin } from "~/types/general";
+import { stringToOrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {
@@ -13,16 +13,11 @@ export default defineEventHandler(async (event) => {
 
   const user = await serviceKit.authService.getUserFromToken(token);
 
-  const statusParam = getRouterParam(event, "status");
-  if (!statusParam) {
-    return new Response("Bad Request", { status: 400 });
+  const query = getQuery(event);
+  if (!query.status) {
+    return new Response("Missing status query parameter", { status: 400 });
   }
-  const status = statusParam as OrderStatusAdmin;
-
-  if (status === "all") {
-    const orders = await serviceKit.orderService.getAllOrders();
-    return orders;
-  }
+  const status = stringToOrderStatus(query.status as string);
 
   const orders = await serviceKit.orderService.filterOrdersByStatus(status);
   return orders;

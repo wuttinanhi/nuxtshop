@@ -1,14 +1,14 @@
-import { Cart, OrderItem, Product, User } from "~/types/general";
+import type { ICart, IOrderItem, IProduct, IUser } from "@/types/entity";
 
 export interface ICartService {
-  createCart(cart: Cart): Promise<Cart>;
-  getCart(user: User): Promise<Cart>;
-  addToCart(user: User, product: OrderItem): Promise<Cart>;
-  removeFromCart(user: User, product: Product): Promise<Cart>;
+  createCart(cart: ICart): Promise<ICart>;
+  getCart(user: IUser): Promise<ICart>;
+  addToCart(user: IUser, product: IOrderItem): Promise<ICart>;
+  removeFromCart(user: IUser, product: IProduct): Promise<ICart>;
   setProductQuantity(
-    user: User,
-    product: Product,
+    user: IUser,
+    product: IProduct,
     quantity: number
-  ): Promise<Cart>;
-  clearCart(user: User): Promise<Cart>;
+  ): Promise<ICart>;
+  clearCart(user: IUser): Promise<ICart>;
 }

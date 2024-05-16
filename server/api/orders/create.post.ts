@@ -1,7 +1,7 @@
 import { ServiceKit } from "~/server/services/service.kit";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {
@@ -23,10 +23,11 @@ export default defineEventHandler(async (event) => {
 
   console.log("Order created");
   console.log(user.id, user.firstName, user.lastName);
-  for (const product of cart.products) {
-    console.log(product.product.id, product.product.name, product.quantity);
+  for (const item of cart.items) {
+    const product = item.product!;
+    console.log(product.id, product.name, item.quantity);
   }
-  console.log("Total:", cart.products.length);
+  console.log("Total:", cart.items.length);
 
   return new Response("Order created", { status: 201 });
 });

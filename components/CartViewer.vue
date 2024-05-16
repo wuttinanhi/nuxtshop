@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import type { Cart, CartModifyRequest, Product } from '~/types/general';
+import type { ICart, IProduct } from "@/types/entity";
+import { KEY_USER } from "~/shared/enums/keys";
+import type { CartModifyRequest } from "~/types/general";
+
+const userInject = inject(KEY_USER);
+const token = userInject?.token.value;
+const user = userInject?.user.value;
 
 const cartVersion = ref(0)
 
 // getting user cart
-let { data } = await useFetch('/api/carts/me', {
+let { data: cart } = await useFetch('/api/carts/me', {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
     },
     transform: (data) => {
-        return data as Cart
+        return data as ICart
     },
     watch: [cartVersion]
 })
+
 
 async function createOrder() {
     try {
@@ -22,7 +29,7 @@ async function createOrder() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token') || ''
+                'Authorization': 'Bearer ' + token
             },
             onResponseError: (error) => {
                 alert(error.response._data.message)
@@ -40,12 +47,12 @@ async function createOrder() {
     }
 }
 
-async function removeAll(product: Product) {
+async function removeAll(product: IProduct) {
     console.log('Remove from cart', product)
 
     const modifyRequest: CartModifyRequest = {
         mode: "remove",
-        productID: product.id,
+        productID: product.id!,
         quantity: 1,
     }
 
@@ -63,12 +70,12 @@ async function removeAll(product: Product) {
     cartVersion.value++
 }
 
-async function changeQuantity(product: Product, quantity: number) {
+async function changeQuantity(product: IProduct, quantity: number) {
     console.log('Change product quantity', product, quantity)
 
     const modifyRequest: CartModifyRequest = {
         mode: "set",
-        productID: product.id,
+        productID: product.id!,
         quantity: quantity,
     }
 
@@ -87,19 +94,19 @@ async function changeQuantity(product: Product, quantity: number) {
 }
 
 const totalPrice = computed(() => {
-    if (!data.value) return 0
-    return calculateTotalPrice(data.value.products)
+    if (!cart.value) return 0
+    return calculateTotalPrice(cart.value.items)
 })
 
 </script>
 
 <template>
-    <div v-if="data">
+    <div v-if="cart">
         <div class="card mb-5">
             <div class="card-body">
                 <p class="card-text d-flex justify-content-between">
-                <div>
-                    <strong>Shipping:</strong> Address: {{ addressToString(data.user.address) }}
+                <div v-if="cart.user && cart.user.address">
+                    <strong>Shipping:</strong> Address: {{ addressToString(cart.user.address) }}
                 </div>
 
                 <NuxtLink to="/account" class="btn btn-primary">Edit Shipping Address</NuxtLink>
@@ -119,26 +126,26 @@ const totalPrice = computed(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in data.products" :key="item.product.id">
+                <tr v-for="(item, index) in cart.items" :key="item.id">
                     <th scope="row">{{ index + 1 }}</th>
-                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product!.name }}</td>
                     <td>
                         <button class="btn btn-primary"
-                            @click="changeQuantity(item.product, item.quantity - 1)">-</button>
+                            @click="changeQuantity(item.product!, item.quantity - 1)">-</button>
                         {{ item.quantity }}
                         <button class="btn btn-primary"
-                            @click="changeQuantity(item.product, item.quantity + 1)">+</button>
+                            @click="changeQuantity(item.product!, item.quantity + 1)">+</button>
                     </td>
-                    <td>{{ (item.product.price).toFixed(2) }}</td>
-                    <td>{{ (item.product.price * item.quantity).toFixed(2) }}</td>
+                    <td>{{ (item.product!.price).toFixed(2) }}</td>
+                    <td>{{ (item.product!.price * item.quantity).toFixed(2) }}</td>
                     <td>
-                        <button class="btn btn-danger" @click="removeAll(item.product)">Remove</button>
+                        <button class="btn btn-danger" @click="removeAll(item.product!)">Remove</button>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="data.products.length > 0">
+        <div class="d-flex justify-content-end align-items-baseline gap-5 mt-5" v-if="cart.items.length > 0">
             <h5 class="card-title">Total: {{ totalPrice.toFixed(2) }}</h5>
             <button class="btn btn-primary" @click="createOrder">Pay Now</button>
         </div>

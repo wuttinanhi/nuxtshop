@@ -1,7 +1,8 @@
-import type { Address, OrderItem } from "~/types/general";
+import type { IAddress, IOrderItem } from "@/types/entity";
 
-export function addressToString(address: Address) {
-  return `${address.address} ${address.city} ${address.state} ${address.zip}`;
+export function addressToString(address: IAddress) {
+  if (!address) return "<no address>";
+  return `${address.addressText} ${address.city} ${address.state} ${address.zip}`;
 }
 
 export function buildAuthHeader() {
@@ -11,8 +12,8 @@ export function buildAuthHeader() {
   };
 }
 
-export function calculateTotalPrice(products: OrderItem[]) {
+export function calculateTotalPrice(products: IOrderItem[]) {
   return products.reduce((acc, item) => {
-    return acc + item.product.price * item.quantity;
+    return acc + item.product!.price * item.quantity;
   }, 0);
 }

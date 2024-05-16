@@ -1,12 +1,12 @@
 import { ServiceKit } from "@/server/services/service.kit";
-import { Product } from "@/types/general";
+import type { IProduct } from "@/types/entity";
 import { getFormDataValue } from "@/utils/server";
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
 
 export default defineEventHandler(async (event) => {
-  const serviceKit = ServiceKit.get();
+  const serviceKit = await ServiceKit.get();
 
   let token: string;
   try {
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
 
   await fs.writeFile(imagePath, image);
 
-  const newProduct: Product = {
+  const newProduct: IProduct = {
     id: 0,
     name,
     description,
