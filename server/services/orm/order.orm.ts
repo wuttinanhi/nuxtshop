@@ -21,16 +21,16 @@ export class OrderServiceORM implements IOrderService {
 
     try {
       const user = await User.findByPk(cart.userId, {
-        include: Address,
+        include: [{ model: Address, as: "address" }],
       });
       if (!user) {
         throw new Error("User not found");
       }
 
-      const address = await Address.findOne({
+      const deliveryAddress = await Address.findOne({
         where: { userId: user.id },
       });
-      if (!address) {
+      if (!deliveryAddress) {
         throw new Error("User address not found");
       }
 
@@ -40,8 +40,9 @@ export class OrderServiceORM implements IOrderService {
           totalPrice: calculateTotalPrice(cart.items),
           UserId: user.id,
           userId: user.id,
-          AddressId: address.id,
-          addressId: address.id,
+          AddressId: deliveryAddress.id,
+          addressId: deliveryAddress.id,
+          deliveryAddressId: deliveryAddress.id,
         },
         { transaction }
       );
@@ -80,7 +81,7 @@ export class OrderServiceORM implements IOrderService {
     return Order.findByPk(id, {
       include: [
         { model: User, as: "user" },
-        { model: Address, as: "address" },
+        { model: Address, as: "delivery_address" },
         {
           model: OrderItem,
           as: "items",
@@ -113,7 +114,7 @@ export class OrderServiceORM implements IOrderService {
     return Order.findAll({
       include: [
         { model: User, as: "user" },
-        { model: Address, as: "address" },
+        { model: Address, as: "delivery_address" },
         {
           model: OrderItem,
           as: "items",
@@ -134,7 +135,7 @@ export class OrderServiceORM implements IOrderService {
       where: whereOpts,
       include: [
         { model: User, as: "user" },
-        { model: Address, as: "address" },
+        { model: Address, as: "delivery_address" },
         {
           model: OrderItem,
           as: "items",
@@ -160,7 +161,7 @@ export class OrderServiceORM implements IOrderService {
       where: whereOpts,
       include: [
         { model: User, as: "user" },
-        { model: Address, as: "address" },
+        { model: Address, as: "delivery_address" },
         {
           model: OrderItem,
           as: "items",

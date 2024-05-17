@@ -1,10 +1,18 @@
 import type { InjectionKey } from "vue";
-import type { ICart, IProduct, IUser } from "~/types/entity";
+import type {
+  ICart,
+  IProduct,
+  IUser,
+  IUserInfo,
+  IUserRegister,
+} from "~/types/entity";
 
 export const KEY_USER = Symbol("KEY_USER") as InjectionKey<{
   user: Ref<IUser | undefined>;
   token: Ref<string | undefined>;
   login: (email: string, password: string) => Promise<void>;
+  register: (data: IUserRegister) => Promise<void>;
+  updateInfo: (data: IUserInfo) => Promise<void>;
   logout: () => void;
 }>;
 

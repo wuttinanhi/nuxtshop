@@ -81,4 +81,8 @@ export class OrderServiceMock implements IOrderService {
       return true;
     });
   }
+
+  received(id: number): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 }

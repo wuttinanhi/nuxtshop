@@ -3,6 +3,10 @@ import { IUser } from "~/types/entity";
 import { IUserService } from "../defs/user.service";
 
 export class UserServiceMock implements IUserService {
+  update(user: IUser): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
   async findById(id: number): Promise<IUser | null> {
     return this.mockUser();
   }

@@ -2,6 +2,7 @@ import { UserRole } from "@/shared/enums/userrole.enum";
 import type { IUser, IUserRegister } from "@/types/entity";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { ValidationError } from "sequelize";
 import { Address, DatabaseSingleton, User } from "~/server/databases/database";
 import type { IAuthService } from "../defs/auth.service";
 
@@ -68,11 +69,11 @@ export class AuthServiceORM implements IAuthService {
 
       const newUser = await User.create(
         {
-          firstName: "Admin",
-          lastName: "User",
-          email: "admin@example.com",
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
           password: hashedPassword,
-          role: UserRole.ADMIN,
+          role: UserRole.USER,
         },
         { transaction }
       );
@@ -83,7 +84,7 @@ export class AuthServiceORM implements IAuthService {
           city: user.address.city,
           state: user.address.state,
           zip: user.address.zip,
-          UserId: newUser.id,
+          userId: newUser.id,
         },
         { transaction }
       );
@@ -94,8 +95,9 @@ export class AuthServiceORM implements IAuthService {
 
       console.log(`User ${newUser.email} created`);
     } catch (error) {
-      console.error("Error loading products", error);
       transaction.rollback();
+      const validationError = error as ValidationError;
+      throw validationError;
     }
   }
 

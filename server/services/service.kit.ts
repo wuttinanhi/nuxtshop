@@ -131,10 +131,10 @@ export class ServiceKit {
     console.log("Products loaded");
   }
 
-  public static async mock(svk: IServiceKit) {
-    await ServiceKit.createAdminUser(svk);
+  public static async mock() {
+    await ServiceKit.createAdminUser(ServiceKit.servicekit);
     await ServiceKit.createMockProduct();
-    await ServiceKit.createMockOrders(svk);
+    await ServiceKit.createMockOrders(ServiceKit.servicekit);
   }
 
   public static async get(): Promise<IServiceKit> {
@@ -144,12 +144,16 @@ export class ServiceKit {
       DatabaseSingleton.getDatabase();
       await DatabaseSingleton.sync();
 
-      // ServiceKit.initMock();
-      await ServiceKit.initORM();
+      if (process.env.MOCK === "true") {
+        console.log("USING MOCK SERVICE");
+        await ServiceKit.initMock();
+      } else {
+        await ServiceKit.initORM();
+      }
 
       if (process.env.NODE_ENV !== "production") {
         console.log("ENV is not production. Mocking...");
-        this.mock(await ServiceKit.get());
+        this.mock();
       }
     }
 

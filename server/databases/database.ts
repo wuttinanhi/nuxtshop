@@ -37,8 +37,8 @@ export class DatabaseSingleton {
     await this.datasource.drop();
     console.log("All tables dropped!");
 
-    User.hasOne(Address);
-    // Address.belongsTo(User);
+    User.hasOne(Address, { as: "address", foreignKey: "userId" });
+    Address.belongsTo(User, { as: "user" });
 
     User.hasOne(Cart, { foreignKey: "userId" });
     Cart.belongsTo(User, { as: "user" });
@@ -47,7 +47,7 @@ export class DatabaseSingleton {
 
     User.hasMany(Order, { foreignKey: "userId" });
     Order.belongsTo(User, { as: "user", foreignKey: "userId" });
-    Order.belongsTo(Address, { as: "address", foreignKey: "addressId" });
+    Order.belongsTo(Address, { as: "delivery_address" });
 
     Order.hasMany(OrderItem, { as: "items", foreignKey: "orderId" });
     OrderItem.belongsTo(Order, { as: "order" });
@@ -138,6 +138,7 @@ User.init(
     },
     email: {
       type: new DataTypes.STRING(128),
+      unique: true,
       allowNull: false,
     },
     password: {
@@ -148,10 +149,6 @@ User.init(
       type: new DataTypes.STRING(128),
       allowNull: false,
     },
-    // addressId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
   },
   {
     tableName: "users",
@@ -278,14 +275,6 @@ Order.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    // userId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
-    // addressId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
     totalPrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

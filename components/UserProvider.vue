@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { ClientAuthService } from "~/clients/auth.client";
 import { KEY_USER } from "~/shared/enums/keys";
-import type { IUser } from "~/types/entity";
+import type { IUser, IUserInfo, IUserRegister } from "~/types/entity";
 
 if (process.client) {
   const user: Ref<IUser | undefined> = ref(undefined);
   const token: Ref<string | undefined> = ref(undefined);
 
   async function loaduser() {
-    const userData = await ClientAuthService.getUserData();
-
-    user.value = userData;
     token.value = ClientAuthService.getToken();
-
-    // console.log(
-    //   "UserLoader > User loaded: ",
-    //   user.value?.id,
-    //   user.value?.firstName
-    // );
-    // console.log("UserLoader > Token:", token.value.substring(0, 16));
+    const userData = await ClientAuthService.getUserData();
+    user.value = userData;
   }
 
   async function login(email: string, password: string) {
@@ -42,6 +34,56 @@ if (process.client) {
     }
   }
 
+  async function register(data: IUserRegister) {
+    try {
+      const res: any = await $fetch("/api/accounts/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      console.log(res);
+
+      alert("User registered successfully");
+      await navigateTo("/account", { replace: true });
+      return;
+    } catch (error) {
+      const e = error as Error;
+      console.log(e.name, "=>", e.message);
+
+      if (e.name.includes("FetchError")) {
+        const response = await (error as any).response;
+        const data = response._data;
+
+        if (String(data).includes("exists")) {
+          alert("User already exists");
+          return;
+        }
+
+        alert("Error registering user: " + data);
+      }
+    }
+  }
+
+  async function updateInfo(data: IUserInfo) {
+    try {
+      const res: any = await $fetch("/api/accounts/update", {
+        method: "PATCH",
+        body: JSON.stringify(data),
+        headers: { Authorization: `Bearer ${token.value}` },
+      });
+
+      console.log(res);
+
+      alert("User update successfully");
+      await navigateTo("/account", { replace: true });
+      return;
+    } catch (error) {
+      const e = error as Error;
+      console.log(e.name, "=>", e.message);
+      alert("Error updating user: " + e.message);
+    }
+  }
+
   async function logout() {
     console.log("logging out...");
     localStorage.removeItem("token");
@@ -59,6 +101,8 @@ if (process.client) {
     user,
     token,
     login,
+    updateInfo,
+    register,
     logout,
   });
 }

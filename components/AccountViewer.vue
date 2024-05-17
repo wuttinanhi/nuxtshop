@@ -1,38 +1,43 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { KEY_USER } from "~/shared/enums/keys";
-import type { IUser } from "~/types/entity";
+import type { IUserInfo, IUserRegister } from "~/types/entity";
 
 const injectUser = inject(KEY_USER, undefined);
 const user = ref(injectUser?.user);
 
 const formMode = ref("login");
 
-const userForm = ref({
-  id: 0,
-  email: "",
-  password: "",
-  address: {
-    addressText: "",
-    city: "",
-    state: "",
-    zip: "",
-  },
-  firstName: "",
-  lastName: "",
-  role: "user",
-} as IUser);
+const userForm: Ref<IUserInfo> = ref(
+  user.value
+    ? (user.value as any)
+    : {
+        id: 0,
+        firstName: "",
+        lastName: "",
+        email: "",
+        addressId: 0,
+        address: {
+          id: 0,
+          addressText: "",
+          city: "",
+          state: "",
+          zip: "",
+        },
+        role: "user",
+      }
+);
 
 function login() {
   injectUser?.login(userForm.value.email, userForm.value.password!);
 }
 
-async function saveUser() {
-  console.log(userForm.value);
+function register() {
+  injectUser?.register(userForm.value as any as IUserRegister);
 }
 
-function registerSubmit() {
-  console.log(userForm.value);
+async function saveUser() {
+  injectUser?.updateInfo(userForm.value);
 }
 
 function changeMode() {
@@ -99,7 +104,7 @@ function changeMode() {
       </div>
 
       <div v-else class="d-flex gap-2 mt-5">
-        <button type="submit" class="btn btn-primary" @click="registerSubmit">
+        <button type="submit" class="btn btn-primary" @click="register">
           Register
         </button>
 

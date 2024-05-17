@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IUser } from "~/types/entity";
+import type { IUserInfo } from "~/types/entity";
 
 const props = defineProps({
   user: {
-    type: Object as () => IUser,
+    type: Object as () => IUserInfo,
     required: true,
   },
 });
