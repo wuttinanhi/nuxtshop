@@ -68,6 +68,16 @@ export class ServiceKit {
       address: adminAddress,
     });
 
+    const updatedAdminUser = await svk.userService.findByEmail(
+      "admin@example.com"
+    );
+    if (!updatedAdminUser) {
+      console.log("Failed to get admin user");
+      return;
+    }
+
+    await svk.userService.setRole(updatedAdminUser, UserRole.ADMIN);
+
     console.log("Admin user created");
   }
 

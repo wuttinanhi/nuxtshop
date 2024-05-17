@@ -1,10 +1,9 @@
 import { ServiceKit } from "~/server/services/service.kit";
 
 let isRunBefore = false;
+
 export default defineNuxtPlugin((nuxtApp) => {
-  if (isRunBefore) {
-    return;
-  }
+  if (isRunBefore) return;
   isRunBefore = true;
 
   console.log("--- SETUP PLUGIN ---");

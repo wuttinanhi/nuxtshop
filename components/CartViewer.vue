@@ -77,7 +77,7 @@ const cart = ref(cartInject?.cart);
         Total: {{ Number(cartInject?.totalPrice.value).toFixed(2) }}
       </h5>
       <button class="btn btn-primary" @click="cartInject?.createOrder">
-        Pay Now
+        Place Order
       </button>
     </div>
 

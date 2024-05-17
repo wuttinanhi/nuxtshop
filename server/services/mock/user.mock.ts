@@ -1,9 +1,13 @@
 import { UserRole } from "~/shared/enums/userrole.enum";
-import { IUser } from "~/types/entity";
+import { IUser, IUserInfo } from "~/types/entity";
 import { IUserService } from "../defs/user.service";
 
 export class UserServiceMock implements IUserService {
-  update(user: IUser): Promise<void> {
+  updateInfo(user: IUserInfo): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  setRole(user: IUser, role: UserRole): Promise<void> {
     throw new Error("Method not implemented.");
   }
 

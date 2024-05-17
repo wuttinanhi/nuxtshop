@@ -1,4 +1,5 @@
 import { ServiceKit } from "~/server/services/service.kit";
+import { calculateTotalPrice } from "~/utils/basic";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = await ServiceKit.get();
@@ -15,19 +16,23 @@ export default defineEventHandler(async (event) => {
   // get the cart for the user
   const cart = await serviceKit.cartService.getCart(user);
 
+  console.log("========== Order created ==========");
+  console.log(
+    `Buyer: #${user.id} ${user.email} ${user.firstName} ${user.lastName}`
+  );
+  for (const item of cart.items) {
+    const product = item.product!;
+    console.log(product.id, product.name, item.quantity);
+  }
+  console.log("Total items:", cart.items.length);
+  console.log("Total price:", calculateTotalPrice(cart.items));
+  console.log("====================================");
+
   // create an order from the cart
   await serviceKit.orderService.createOrderFromCart(cart);
 
   // clear the cart
   await serviceKit.cartService.clearCart(user);
-
-  console.log("Order created");
-  console.log(user.id, user.firstName, user.lastName);
-  for (const item of cart.items) {
-    const product = item.product!;
-    console.log(product.id, product.name, item.quantity);
-  }
-  console.log("Total:", cart.items.length);
 
   return new Response("Order created", { status: 201 });
 });
