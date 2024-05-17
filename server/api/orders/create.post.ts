@@ -22,7 +22,11 @@ export default defineEventHandler(async (event) => {
   );
   for (const item of cart.items) {
     const product = item.product!;
-    console.log(product.id, product.name, item.quantity);
+    console.log(
+      ` - ${product.name} x ${item.quantity} = $${Number(
+        product.price * item.quantity
+      ).toFixed(2)}`
+    );
   }
   console.log("Total items:", cart.items.length);
   console.log("Total price:", calculateTotalPrice(cart.items));

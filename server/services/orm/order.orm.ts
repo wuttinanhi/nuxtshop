@@ -47,6 +47,8 @@ export class OrderServiceORM implements IOrderService {
         { transaction }
       );
 
+      console.log(`preparing order #${order.id}`);
+
       for (const item of cart.items) {
         const orderItem = await OrderItem.create(
           {
