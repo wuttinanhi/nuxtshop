@@ -12,7 +12,7 @@ const props = defineProps<GenericOrderViewerProps>();
 
 const currentTab = ref(OrderStatus.All);
 
-const userInject = inject(KEY_USER);
+const userInject = inject(KEY_USER, undefined);
 const token = userInject?.token.value;
 
 const tabs = [

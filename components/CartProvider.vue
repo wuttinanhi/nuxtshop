@@ -4,11 +4,15 @@ import type { ICart, IProduct } from "~/types/entity";
 import type { CartModifyRequest } from "~/types/general";
 
 if (process.client) {
-  const userInject = inject(KEY_USER);
+  const userInject = inject(KEY_USER, undefined);
   const token = userInject?.token.value;
 
   // getting user cart
-  let { data: cart, refresh } = await useFetch("/api/carts/me", {
+  let {
+    data: cart,
+    refresh,
+    execute,
+  } = await useFetch("/api/carts/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -17,6 +21,8 @@ if (process.client) {
     transform: (data) => {
       return data as ICart;
     },
+    // do not execute on load
+    immediate: false,
   });
 
   function getCart() {
@@ -121,6 +127,13 @@ if (process.client) {
   const totalPrice = computed(() => {
     if (!cart.value) return 0;
     return calculateTotalPrice(cart.value.items);
+  });
+
+  onMounted(() => {
+    if (userInject?.user.value) {
+      console.log("Cart not loaded, loading...");
+      execute();
+    }
   });
 
   provide(KEY_CART, {

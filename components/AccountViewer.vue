@@ -4,6 +4,7 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { IUser } from "~/types/entity";
 
 const injectUser = inject(KEY_USER, undefined);
+const user = ref(injectUser?.user);
 
 const formMode = ref("login");
 
@@ -22,26 +23,8 @@ const userForm = ref({
   role: "user",
 } as IUser);
 
-async function loginSubmit() {
-  try {
-    const res: any = await $fetch("/api/accounts/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: userForm.value.email,
-        password: userForm.value.password,
-      }),
-    });
-
-    if (!res.token) {
-      throw new Error("Invalid login");
-    }
-
-    localStorage.setItem("token", res.token);
-
-    await navigateTo("/", { replace: true });
-  } catch (error) {
-    alert("Error logging in");
-  }
+function login() {
+  injectUser?.login(userForm.value.email, userForm.value.password!);
 }
 
 async function saveUser() {
@@ -55,18 +38,12 @@ function registerSubmit() {
 function changeMode() {
   formMode.value = formMode.value === "login" ? "register" : "login";
 }
-
-async function logout() {
-  console.log("logging out...");
-  localStorage.removeItem("token");
-  navigateTo("/");
-}
 </script>
 
 <template>
   <h1 class="mb-5">Account</h1>
 
-  <div v-if="injectUser && injectUser.token.value">
+  <div v-if="user">
     <h3>Your Info</h3>
 
     <UserInfoForm :user="userForm" />
@@ -75,8 +52,9 @@ async function logout() {
     <hr class="my-5" />
 
     <h4 class="mb-3">Action</h4>
-    <button class="btn btn-danger" @click="logout">Logout</button>
+    <button class="btn btn-danger" @click="injectUser?.logout">Logout</button>
   </div>
+
   <div v-else>
     <form @submit.prevent="null">
       <div>
@@ -111,7 +89,7 @@ async function logout() {
       </div>
 
       <div v-if="formMode === 'login'" class="d-flex gap-2 mt-5">
-        <button type="submit" class="btn btn-primary" @click="loginSubmit">
+        <button type="submit" class="btn btn-primary" @click="login">
           Login
         </button>
 

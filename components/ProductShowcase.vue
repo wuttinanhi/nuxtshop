@@ -2,8 +2,7 @@
 import type { IProduct } from "@/types/entity";
 import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 
-const userInject = inject(KEY_USER);
-const token = userInject?.token.value;
+const userInject = inject(KEY_USER, undefined);
 
 const cartInject = inject(KEY_CART, undefined);
 

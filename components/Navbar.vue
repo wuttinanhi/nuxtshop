@@ -2,7 +2,7 @@
 import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 
 const injectUser = inject(KEY_USER, undefined);
-const user = injectUser?.user.value;
+const user = ref(injectUser?.user);
 
 let cartInject = inject(KEY_CART, undefined);
 

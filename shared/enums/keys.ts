@@ -3,8 +3,9 @@ import type { ICart, IProduct, IUser } from "~/types/entity";
 
 export const KEY_USER = Symbol("KEY_USER") as InjectionKey<{
   user: Ref<IUser | undefined>;
-  setUser: (user: IUser) => void;
   token: Ref<string | undefined>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }>;
 
 export const KEY_CART = Symbol("KEY_CART") as InjectionKey<{
