@@ -8,27 +8,35 @@ export class DatabaseSingleton {
 
   public static getDatabase() {
     if (!DatabaseSingleton.datasource) {
+      console.log("Database using", process.env.DB_TYPE || "sqlite");
+
       switch (process.env.DB_TYPE) {
         case "mysql":
         // wait for implementation
         case "postgres":
-        // wait for implementation
+          console.log("Creating a new PostgreSQL connection...");
+          DatabaseSingleton.datasource = new Sequelize({
+            dialect: "postgres",
+            host: process.env.DB_HOST,
+            port: parseInt(parseInt(process.env.DB_PORT as any).toString()),
+            username: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME,
+            logging: false,
+          });
+          break;
         default:
-          DatabaseSingleton.datasource = DatabaseSingleton.createSQLite();
+          console.log("Creating a new SQLite connection...");
+          DatabaseSingleton.datasource = new Sequelize({
+            dialect: "sqlite",
+            storage: process.env.DB_STORAGE || "database.sqlite",
+            logging: false,
+          });
+          break;
       }
     }
 
     return DatabaseSingleton.datasource;
-  }
-
-  static createSQLite() {
-    const sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: process.env.DB_STORAGE || "database.sqlite",
-      logging: false,
-    });
-
-    return sequelize;
   }
 
   public static async loadRelations() {

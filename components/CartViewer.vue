@@ -58,8 +58,8 @@ const cart = ref(cartInject?.cart);
               +
             </button>
           </td>
-          <td>{{ item.product!.price.toFixed(2) }}</td>
-          <td>{{ (item.product!.price * item.quantity).toFixed(2) }}</td>
+          <td>{{ Number(item.product!.price).toFixed(2) }}</td>
+          <td>{{ (Number(item.product!.price) * Number(item.quantity)).toFixed(2) }}</td>
           <td>
             <button
               class="btn btn-danger"
