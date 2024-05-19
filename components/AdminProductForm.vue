@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
 import { KEY_USER } from "~/shared/enums/keys";
+import { getImageURL } from "~/shared/utils";
 import type { AdminProductFormMode } from "~/types/general";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token.value;
+const token = ref(injectUser?.token);
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageFile = ref<File | null>(null);
@@ -32,7 +33,7 @@ const product: Ref<IProduct> = ref(
   }
 );
 
-const imageURL = ref(product.value.imageURL);
+const imageURL = ref(getImageURL(product.value.imageURL));
 
 const buttonLabel = computed(() => {
   return props.mode === "update" ? "Update" : "Add";
@@ -65,7 +66,7 @@ async function onSubmit() {
   const result: any = await $fetch("/api/admin/products", {
     method: requestMethod,
     headers: {
-      Authorization: "Bearer " + token || "",
+      Authorization: "Bearer " + token.value || "",
     },
     body: formData,
   });
@@ -96,7 +97,7 @@ async function deleteProduct() {
   const result = await $fetch("/api/admin/products/" + product.value.id, {
     method: "DELETE",
     headers: {
-      Authorization: "Bearer " + token || "",
+      Authorization: "Bearer " + token.value || "",
     },
   });
 

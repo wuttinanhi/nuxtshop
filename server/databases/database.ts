@@ -31,42 +31,37 @@ export class DatabaseSingleton {
     return sequelize;
   }
 
-  public static async sync() {
-    console.log("Synchronizing models...");
-
-    await this.datasource.drop();
-    console.log("All tables dropped!");
-
-    User.hasOne(Address);
-    // Address.belongsTo(User);
+  public static async loadRelations() {
+    User.hasOne(Address, { as: "address", foreignKey: "userId" });
+    Address.belongsTo(User, { as: "user", foreignKey: "userId" });
 
     User.hasOne(Cart, { foreignKey: "userId" });
-    Cart.belongsTo(User, { as: "user" });
+    Cart.belongsTo(User, { as: "user", foreignKey: "userId" });
     Cart.hasMany(OrderItem, { as: "items", foreignKey: "cartId" });
-    OrderItem.belongsTo(Cart, { as: "cart" });
+    OrderItem.belongsTo(Cart, { as: "cart", foreignKey: "cartId" });
 
     User.hasMany(Order, { foreignKey: "userId" });
     Order.belongsTo(User, { as: "user", foreignKey: "userId" });
-    Order.belongsTo(Address, { as: "address", foreignKey: "addressId" });
+    Order.belongsTo(Address, {
+      as: "delivery_address",
+      foreignKey: "addressId",
+    });
 
     Order.hasMany(OrderItem, { as: "items", foreignKey: "orderId" });
-    OrderItem.belongsTo(Order, { as: "order" });
+    OrderItem.belongsTo(Order, { as: "order", foreignKey: "orderId" });
 
     Product.hasMany(OrderItem, { foreignKey: "productId" });
-    OrderItem.belongsTo(Product, { as: "product" });
+    OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
+  }
+
+  public static async sync() {
+    console.log("Synchronizing models...");
+    await this.datasource.drop();
+    console.log("All tables dropped!");
 
     await this.datasource.sync({ force: true });
-    console.log("All models were synchronized successfully.");
 
     console.log("Synchronizing models done!");
-
-    // await Address.sync({ force: true });
-    // await Address.sync({ force: true });
-    // await User.sync({ force: true });
-    // await Product.sync({ force: true });
-    // await OrderItem.sync({ force: true });
-    // await Cart.sync({ force: true });
-    // await Order.sync({ force: true });
   }
 }
 
@@ -138,6 +133,7 @@ User.init(
     },
     email: {
       type: new DataTypes.STRING(128),
+      unique: true,
       allowNull: false,
     },
     password: {
@@ -148,10 +144,6 @@ User.init(
       type: new DataTypes.STRING(128),
       allowNull: false,
     },
-    // addressId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
   },
   {
     tableName: "users",
@@ -216,10 +208,6 @@ OrderItem.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    // productId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -278,14 +266,6 @@ Order.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    // userId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
-    // addressId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
     totalPrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

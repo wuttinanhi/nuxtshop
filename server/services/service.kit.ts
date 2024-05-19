@@ -9,6 +9,7 @@ import { OrderServiceMock } from "./mock/order.mock";
 import { ProductServiceMock } from "./mock/product.mock";
 import { UserServiceMock } from "./mock/user.mock";
 import { AuthServiceORM } from "./orm/auth.orm";
+import { CartServiceORM } from "./orm/cart.orm";
 import { OrderServiceORM } from "./orm/order.orm";
 import { ProductServiceORM } from "./orm/product.orm";
 import { UserServiceORM } from "./orm/user.orm";
@@ -17,7 +18,7 @@ export class ServiceKit {
   private static isStartInit = false;
   private static servicekit: IServiceKit;
 
-  public static async initMock() {
+  public static async initMockService() {
     ServiceKit.servicekit = {
       authService: new AuthServiceMock(),
       cartService: new CartServiceMock(),
@@ -27,14 +28,14 @@ export class ServiceKit {
     };
   }
 
-  public static async initORM() {
+  public static async initORMService() {
     DatabaseSingleton.getDatabase();
 
     const authService = new AuthServiceORM();
 
     ServiceKit.servicekit = {
       authService: authService,
-      cartService: new CartServiceMock(),
+      cartService: new CartServiceORM(),
       orderService: new OrderServiceORM(),
       productService: new ProductServiceORM(),
       userService: new UserServiceORM(),
@@ -68,31 +69,42 @@ export class ServiceKit {
       address: adminAddress,
     });
 
+    const updatedAdminUser = await svk.userService.findByEmail(
+      "admin@example.com"
+    );
+    if (!updatedAdminUser) {
+      console.log("Failed to get admin user");
+      return;
+    }
+
+    await svk.userService.setRole(updatedAdminUser, UserRole.ADMIN);
+
     console.log("Admin user created");
   }
 
-  public static async createMockOrders(svk: IServiceKit) {
+  public static async createMockOrders() {
     console.log("Creating mock orders...");
+    const serviceKit = await ServiceKit.get();
 
-    const user = await svk.userService.findById(1);
+    const user = await serviceKit.userService.findById(1);
     if (!user) {
       console.log("Failed to create mock orders: User to mock not found");
       return;
     }
 
-    const product = await svk.productService.getByID(1);
+    const product = await serviceKit.productService.getByID(1);
     if (!product) {
       console.log("Failed to create mock orders: Product to mock not found");
       return;
     }
 
-    const cart = await svk.cartService.addToCart(user, {
+    const cart = await serviceKit.cartService.addToCart(user, {
       product,
       quantity: 1,
       productId: product.id!,
     });
 
-    await svk.orderService.createOrderFromCart(cart);
+    await serviceKit.orderService.createOrderFromCart(cart);
 
     console.log("Mock orders created");
   }
@@ -131,25 +143,52 @@ export class ServiceKit {
     console.log("Products loaded");
   }
 
-  public static async mock(svk: IServiceKit) {
-    await ServiceKit.createAdminUser(svk);
+  public static async mockData() {
     await ServiceKit.createMockProduct();
-    await ServiceKit.createMockOrders(svk);
+    await ServiceKit.createMockOrders();
+  }
+
+  public static async checkAdminUser() {
+    const svk = await ServiceKit.get();
+    const adminUser = await svk.userService.findByEmail("admin@example.com");
+
+    if (!adminUser) {
+      console.log("Admin user not found. Creating...");
+      await ServiceKit.createAdminUser(svk);
+    }
+  }
+
+  public static async setupDatabase() {
+    const db = DatabaseSingleton.getDatabase();
+    await DatabaseSingleton.loadRelations();
+
+    const tables = await db.getQueryInterface().showAllTables();
+    console.log("Tables found in database: ", tables);
+
+    if (tables.length <= 0) {
+      console.log("No tables found. Syncing database...");
+      await DatabaseSingleton.sync();
+    }
   }
 
   public static async get(): Promise<IServiceKit> {
     if (!ServiceKit.servicekit && !ServiceKit.isStartInit) {
       ServiceKit.isStartInit = true;
 
-      DatabaseSingleton.getDatabase();
-      await DatabaseSingleton.sync();
+      await this.setupDatabase();
 
-      // ServiceKit.initMock();
-      await ServiceKit.initORM();
+      if (process.env.MOCK === "true") {
+        console.log("USING MOCK SERVICE");
+        await ServiceKit.initMockService();
+      } else {
+        await ServiceKit.initORMService();
+      }
+
+      await ServiceKit.checkAdminUser();
 
       if (process.env.NODE_ENV !== "production") {
         console.log("ENV is not production. Mocking...");
-        this.mock(await ServiceKit.get());
+        await this.mockData();
       }
     }
 

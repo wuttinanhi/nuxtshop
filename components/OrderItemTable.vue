@@ -21,11 +21,11 @@ const props = defineProps({
     </thead>
     <tbody>
       <tr v-for="(item, index) in props.items" :key="item.id">
-        <th scope="row">{{ index }}</th>
-        <td>{{ item.product!.name }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.product!.price }}</td>
-        <td>{{ item.product!.price * item.quantity }}</td>
+        <th scope="row">{{ index + 1 }}</th>
+        <td v-if="item.product">{{ item.product.name }}</td>
+        <td v-if="item.product">{{ item.quantity }}</td>
+        <td v-if="item.product">{{ item.product.price }}</td>
+        <td v-if="item.product">{{ item.product.price * item.quantity }}</td>
       </tr>
     </tbody>
   </table>

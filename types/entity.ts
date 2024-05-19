@@ -38,7 +38,19 @@ export interface IUser {
   token?: string;
 }
 
-export type IUserRegister = Omit<IUser, "id" | "addressId">;
+export type IUserRegister = Omit<IUser, "id" | "addressId"> & {
+  password: string;
+  address: IAddress;
+};
+
+export interface IUserInfo {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: IAddress;
+  password?: string;
+}
 
 export interface ICart {
   id?: number;

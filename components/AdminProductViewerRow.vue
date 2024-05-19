@@ -1,31 +1,37 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
+import { getImageURL } from "~/shared/utils";
 
 const props = defineProps({
-    product: {
-        type: Object as () => IProduct,
-        required: true
-    },
-    index: {
-        type: Number,
-        required: true
-    }
+  product: {
+    type: Object as () => IProduct,
+    required: true,
+  },
+  index: {
+    type: Number,
+    required: true,
+  },
 });
 
 const product = ref(props.product);
 </script>
 <template>
-    <tr v-show="!product.__clientDeleted">
-        <th scope="row">{{ props.index + 1 }}</th>
-        <td>
-            <img :src="product.imageURL" :alt="product.name" width="100" height="100">
-        </td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.price }}</td>
-        <td>
-            <div class="d-flex align-items-center gap-2">
-                <AdminProductDialog :product="product" mode="update" />
-            </div>
-        </td>
-    </tr>
+  <tr v-show="!product.__clientDeleted">
+    <th scope="row">{{ props.index + 1 }}</th>
+    <td>
+      <img
+        :src="getImageURL(product.imageURL)"
+        :alt="product.name"
+        width="100"
+        height="100"
+      />
+    </td>
+    <td>{{ product.name }}</td>
+    <td>{{ product.price }}</td>
+    <td>
+      <div class="d-flex align-items-center gap-2">
+        <AdminProductDialog :product="product" mode="update" />
+      </div>
+    </td>
+  </tr>
 </template>

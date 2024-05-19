@@ -1,34 +1,22 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
-import { KEY_USER } from "~/shared/enums/keys";
-import type { CartModifyRequest } from "~/types/general";
+import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
+import { getImageURL } from "~/shared/utils";
 
-const userInject = inject(KEY_USER);
-const token = userInject?.token.value;
+const userInject = inject(KEY_USER, undefined);
+const user = ref(userInject?.user);
+const cartInject = inject(KEY_CART, undefined);
 
 const { pending, data } = await useFetch("/api/products/all", {
   transform: (data) => data as IProduct[],
 });
 
 async function addToCart(product: IProduct) {
-  console.log("Add to cart", product);
-
-  const modifyRequest: CartModifyRequest = {
-    mode: "add",
-    productID: product.id!,
-    quantity: 1,
-  };
-
-  const result = await $fetch("/api/carts/modify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify(modifyRequest),
-  });
-
-  console.log(result);
+  if (!user.value) {
+    navigateTo("/account");
+    return;
+  }
+  cartInject?.addToCart(product);
 }
 </script>
 
@@ -37,9 +25,9 @@ async function addToCart(product: IProduct) {
     <div class="col-xs-12 col-md-4" v-for="product in data" :key="product.id">
       <div class="card">
         <img
-          :src="product.imageURL"
+          :src="getImageURL(product.imageURL)"
           class="card-img"
-          alt="{{ product.imageURL }}"
+          :alt="product.name"
           style="max-height: 300px; object-fit: cover; max-width: 100%"
         />
 

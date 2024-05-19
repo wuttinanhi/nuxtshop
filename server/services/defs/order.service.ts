@@ -1,4 +1,4 @@
-import type { ICart, IOrder, IUser, IUserRegister } from "@/types/entity";
+import type { ICart, IOrder, IUser } from "@/types/entity";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 
 export interface IOrderFilter {
@@ -10,7 +10,7 @@ export interface IOrderService {
   createOrderFromCart(cart: ICart): Promise<IOrder>;
   getOrder(id: number): Promise<IOrder | null>;
   payForOrder(id: number): Promise<IOrder>;
-  getOrdersForUser(user: IUserRegister): Promise<IOrder[]>;
+  getOrdersForUser(user: IUser): Promise<IOrder[]>;
   getAllOrders(): Promise<IOrder[]>;
   filterOrdersByStatus(status: OrderStatus): Promise<IOrder[]>;
   filter(opts: IOrderFilter): Promise<IOrder[]>;

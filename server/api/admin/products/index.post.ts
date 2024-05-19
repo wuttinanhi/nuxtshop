@@ -34,27 +34,24 @@ export default defineEventHandler(async (event) => {
   }
 
   // generate image UUID
-  const imageUUID = crypto.randomUUID();
-  console.log(process.cwd() as string);
+  const imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
 
-  // process.cwd() + /public/products/${imageUUID}.png
-  const imagePath = path.join(
-    process.cwd(),
-    "public",
-    "products",
-    `${imageUUID}.png`
-  );
+  // build image path
+  const uploadDir = path.join(process.cwd(), "public", "uploads");
+  await fs.mkdir(uploadDir, { recursive: true });
+  const imagePath = path.join(uploadDir, `${imageUUID}.png`);
+
+  // save image to disk
+  await fs.writeFile(imagePath, image);
 
   console.log("saving product image to", imagePath);
-
-  await fs.writeFile(imagePath, image);
 
   const newProduct: IProduct = {
     id: 0,
     name,
     description,
     price: price,
-    imageURL: `/products/${imageUUID}.png`,
+    imageURL: imageUUID,
   };
 
   const createdProduct = await serviceKit.productService.createProduct(
