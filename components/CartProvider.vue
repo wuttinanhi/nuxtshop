@@ -3,16 +3,11 @@ import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 import type { ICart, IProduct } from "~/types/entity";
 import type { CartModifyRequest } from "~/types/general";
 
-const userInject = inject(KEY_USER, undefined);
-const token = ref(userInject?.token);
+if (process.client) {
+  const userInject = inject(KEY_USER, undefined);
+  const token = ref(userInject?.token);
 
-if (process.client && token.value) {
-  // getting user cart
-  let {
-    data: cart,
-    refresh,
-    execute,
-  } = await useFetch("/api/carts/me", {
+  let { data: cart, refresh } = await useFetch(() => "/api/carts/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -21,6 +16,7 @@ if (process.client && token.value) {
     transform: (data) => {
       return data as ICart;
     },
+    watch: [token],
   });
 
   function getCart() {
@@ -35,7 +31,7 @@ if (process.client && token.value) {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token.value,
         },
-        onResponseError: (error) => {
+        onResponseError: (error: any) => {
           alert(error.response._data.message);
         },
       });
@@ -45,8 +41,6 @@ if (process.client && token.value) {
       console.log("Order created");
       console.log(result);
 
-      refresh();
-
       await navigateTo("/orders");
     } catch (e) {
       console.error(e);
@@ -54,7 +48,7 @@ if (process.client && token.value) {
   }
 
   async function addToCart(product: IProduct) {
-    console.log("Add to cart", product);
+    console.log(`Adding ${product.name} to cart`);
 
     const modifyRequest: CartModifyRequest = {
       mode: "add",

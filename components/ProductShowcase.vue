@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
 import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
+import { getImageURL } from "~/shared/utils";
 
 const userInject = inject(KEY_USER, undefined);
 const user = ref(userInject?.user);
@@ -11,11 +12,10 @@ const { pending, data } = await useFetch("/api/products/all", {
 });
 
 async function addToCart(product: IProduct) {
-  if (!user.value || !cartInject) {
+  if (!user.value) {
     navigateTo("/account");
     return;
   }
-
   cartInject?.addToCart(product);
 }
 </script>
@@ -25,9 +25,9 @@ async function addToCart(product: IProduct) {
     <div class="col-xs-12 col-md-4" v-for="product in data" :key="product.id">
       <div class="card">
         <img
-          :src="product.imageURL"
+          :src="getImageURL(product.imageURL)"
           class="card-img"
-          alt="{{ product.imageURL }}"
+          :alt="product.name"
           style="max-height: 300px; object-fit: cover; max-width: 100%"
         />
 

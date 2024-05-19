@@ -28,7 +28,7 @@ if (process.client) {
 
       await loaduser();
 
-      await navigateTo("/", { replace: true });
+      window.location.href = "/";
     } catch (error) {
       alert("Error logging in");
     }

@@ -39,18 +39,14 @@ export default defineEventHandler(async (event) => {
   const image = getFormDataValue(multipartFormData, "image", true);
   if (image) {
     // generate image UUID
-    imageUUID = crypto.randomUUID();
-    console.log(process.cwd() as string);
+    const imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
 
-    // process.cwd() + /public/products/${imageUUID}.png
+    // build image path
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadDir, { recursive: true });
+    const imagePath = path.join(uploadDir, `${imageUUID}.png`);
 
-    imagePath = path.join(
-      process.cwd(),
-      "public",
-      "products",
-      `${imageUUID}.png`
-    );
-
+    // save image to disk
     await fs.writeFile(imagePath, image);
 
     console.log("saving product image to", imagePath);
@@ -66,7 +62,7 @@ export default defineEventHandler(async (event) => {
     name: name || oldProduct.name,
     description: description || oldProduct.description,
     price: price || oldProduct.price,
-    imageURL: image ? `/products/${imageUUID}.png` : oldProduct.imageURL,
+    imageURL: image ? imageUUID : oldProduct.imageURL,
   };
 
   const updatedProduct = await serviceKit.productService.updateProduct(
