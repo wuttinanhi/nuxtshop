@@ -5,13 +5,13 @@ import AdminProductDialog from "./AdminProductDialog.vue";
 import AdminProductViewerRow from "./AdminProductViewerRow.vue";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token.value;
+const token = ref(injectUser?.token);
 
 let { data } = await useFetch(() => `/api/admin/products`, {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
-    Authorization: "Bearer " + token || "",
+    Authorization: "Bearer " + token.value || "",
   },
   transform: (data) => {
     return data as IProduct[];

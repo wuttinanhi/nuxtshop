@@ -12,7 +12,7 @@ interface OrderViewerDetailProps {
 const props = defineProps<OrderViewerDetailProps>();
 
 const userInject = inject(KEY_USER, undefined);
-const token = userInject?.token.value;
+const token = ref(userInject?.token);
 
 async function payOrder(order: IOrder) {
   try {
@@ -42,7 +42,7 @@ function updateOrderStatus(orderId: any, status: OrderStatus) {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + token.value,
     },
     body: JSON.stringify({
       status: status,
@@ -67,7 +67,7 @@ async function confirmReceived(order: IOrder) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + token.value,
     },
     body: JSON.stringify({
       status: status,

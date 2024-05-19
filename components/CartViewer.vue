@@ -10,9 +10,12 @@ const cart = ref(cartInject?.cart);
     <div class="card mb-5">
       <div class="card-body">
         <p class="card-text d-flex justify-content-between">
-          <!-- <div v-if="cart && cart.user">
-              <strong>Shipping:</strong> Address: {{ addressToString(user.address) }}
-          </div> -->
+          <div v-if="cart.user && cart.user.address">
+              <strong>Shipping:</strong> Address: {{ addressToString(cart.user.address) }}
+          </div>
+          <div v-else>
+            <strong>Shipping:</strong> Address: Not set
+          </div>
 
           <NuxtLink to="/account" class="btn btn-primary">
             Edit Shipping Address

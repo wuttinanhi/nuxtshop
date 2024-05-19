@@ -13,7 +13,7 @@ const props = defineProps<GenericOrderViewerProps>();
 const currentTab = ref(OrderStatus.All);
 
 const userInject = inject(KEY_USER, undefined);
-const token = userInject?.token.value;
+const token = ref(userInject?.token);
 
 const tabs = [
   { title: "All", status: OrderStatus.All },
@@ -43,7 +43,7 @@ const {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
-    Authorization: "Bearer " + token,
+    Authorization: "Bearer " + token.value,
   },
   transform: (data) => {
     return data as IOrder[];

@@ -9,6 +9,7 @@ import { OrderServiceMock } from "./mock/order.mock";
 import { ProductServiceMock } from "./mock/product.mock";
 import { UserServiceMock } from "./mock/user.mock";
 import { AuthServiceORM } from "./orm/auth.orm";
+import { CartServiceORM } from "./orm/cart.orm";
 import { OrderServiceORM } from "./orm/order.orm";
 import { ProductServiceORM } from "./orm/product.orm";
 import { UserServiceORM } from "./orm/user.orm";
@@ -34,7 +35,7 @@ export class ServiceKit {
 
     ServiceKit.servicekit = {
       authService: authService,
-      cartService: new CartServiceMock(),
+      cartService: new CartServiceORM(),
       orderService: new OrderServiceORM(),
       productService: new ProductServiceORM(),
       userService: new UserServiceORM(),
@@ -81,28 +82,29 @@ export class ServiceKit {
     console.log("Admin user created");
   }
 
-  public static async createMockOrders(svk: IServiceKit) {
+  public static async createMockOrders() {
     console.log("Creating mock orders...");
+    const serviceKit = await ServiceKit.get();
 
-    const user = await svk.userService.findById(1);
+    const user = await serviceKit.userService.findById(1);
     if (!user) {
       console.log("Failed to create mock orders: User to mock not found");
       return;
     }
 
-    const product = await svk.productService.getByID(1);
+    const product = await serviceKit.productService.getByID(1);
     if (!product) {
       console.log("Failed to create mock orders: Product to mock not found");
       return;
     }
 
-    const cart = await svk.cartService.addToCart(user, {
+    const cart = await serviceKit.cartService.addToCart(user, {
       product,
       quantity: 1,
       productId: product.id!,
     });
 
-    await svk.orderService.createOrderFromCart(cart);
+    await serviceKit.orderService.createOrderFromCart(cart);
 
     console.log("Mock orders created");
   }
@@ -143,7 +145,7 @@ export class ServiceKit {
 
   public static async mockData() {
     await ServiceKit.createMockProduct();
-    await ServiceKit.createMockOrders(ServiceKit.servicekit);
+    await ServiceKit.createMockOrders();
   }
 
   public static async checkAdminUser() {

@@ -36,16 +36,18 @@ const cartTotalPrice = computed(() => {
               Products
             </NuxtLink>
           </li>
-          <li class="nav-item">
+
+          <li class="nav-item" v-show="user">
             <NuxtLink to="/orders" class="nav-link active" aria-current="page">
               Orders
             </NuxtLink>
           </li>
-          <li class="nav-item">
+
+          <!-- <li class="nav-item">
             <NuxtLink to="/about" class="nav-link active" aria-current="page">
               About
             </NuxtLink>
-          </li>
+          </li> -->
 
           <li class="nav-item ps-sm-5" v-show="user && user.role === 'admin'">
             <NuxtLink to="#" class="nav-link">Admin: </NuxtLink>

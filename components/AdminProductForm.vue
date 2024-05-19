@@ -4,7 +4,7 @@ import { KEY_USER } from "~/shared/enums/keys";
 import type { AdminProductFormMode } from "~/types/general";
 
 const injectUser = inject(KEY_USER, undefined);
-const token = injectUser?.token.value;
+const token = ref(injectUser?.token);
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageFile = ref<File | null>(null);
@@ -65,7 +65,7 @@ async function onSubmit() {
   const result: any = await $fetch("/api/admin/products", {
     method: requestMethod,
     headers: {
-      Authorization: "Bearer " + token || "",
+      Authorization: "Bearer " + token.value || "",
     },
     body: formData,
   });
@@ -96,7 +96,7 @@ async function deleteProduct() {
   const result = await $fetch("/api/admin/products/" + product.value.id, {
     method: "DELETE",
     headers: {
-      Authorization: "Bearer " + token || "",
+      Authorization: "Bearer " + token.value || "",
     },
   });
 
