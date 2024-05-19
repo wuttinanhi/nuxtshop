@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   const image = getFormDataValue(multipartFormData, "image", true);
   if (image) {
     // generate image UUID
-    const imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
+    imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
 
     // build image path
     const uploadDir = path.join(process.cwd(), "public", "uploads");

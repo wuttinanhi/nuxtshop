@@ -41,6 +41,8 @@ if (process.client) {
       console.log("Order created");
       console.log(result);
 
+      refresh();
+
       await navigateTo("/orders");
     } catch (e) {
       console.error(e);

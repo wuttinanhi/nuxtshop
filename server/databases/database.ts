@@ -31,12 +31,7 @@ export class DatabaseSingleton {
     return sequelize;
   }
 
-  public static async sync() {
-    console.log("Synchronizing models...");
-
-    await this.datasource.drop();
-    console.log("All tables dropped!");
-
+  public static async loadRelations() {
     User.hasOne(Address, { as: "address", foreignKey: "userId" });
     Address.belongsTo(User, { as: "user", foreignKey: "userId" });
 
@@ -57,9 +52,15 @@ export class DatabaseSingleton {
 
     Product.hasMany(OrderItem, { foreignKey: "productId" });
     OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
+  }
+
+  public static async sync() {
+    console.log("Synchronizing models...");
+    await this.datasource.drop();
+    console.log("All tables dropped!");
 
     await this.datasource.sync({ force: true });
-    console.log("All models were synchronized successfully.");
+
     console.log("Synchronizing models done!");
   }
 }

@@ -3,10 +3,10 @@ import { ServiceKit } from "~/server/services/service.kit";
 let isRunBefore = false;
 
 export default defineNuxtPlugin((nuxtApp) => {
-  console.log("--- SETUP PLUGIN START ---");
+  // console.log("--- SETUP PLUGIN START ---");
 
   if (isRunBefore) {
-    console.log("Setup plugin already run before, skipping...");
+    // console.log("Setup plugin already run before, skipping...");
     return;
   }
   isRunBefore = true;

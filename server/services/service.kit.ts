@@ -158,12 +158,24 @@ export class ServiceKit {
     }
   }
 
+  public static async setupDatabase() {
+    const db = DatabaseSingleton.getDatabase();
+    await DatabaseSingleton.loadRelations();
+
+    const tables = await db.getQueryInterface().showAllTables();
+    console.log("Tables found in database: ", tables);
+
+    if (tables.length <= 0) {
+      console.log("No tables found. Syncing database...");
+      await DatabaseSingleton.sync();
+    }
+  }
+
   public static async get(): Promise<IServiceKit> {
     if (!ServiceKit.servicekit && !ServiceKit.isStartInit) {
       ServiceKit.isStartInit = true;
 
-      DatabaseSingleton.getDatabase();
-      await DatabaseSingleton.sync();
+      await this.setupDatabase();
 
       if (process.env.MOCK === "true") {
         console.log("USING MOCK SERVICE");

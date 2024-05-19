@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IProduct } from "@/types/entity";
 import { KEY_USER } from "~/shared/enums/keys";
+import { getImageURL } from "~/shared/utils";
 import type { AdminProductFormMode } from "~/types/general";
 
 const injectUser = inject(KEY_USER, undefined);
@@ -32,7 +33,7 @@ const product: Ref<IProduct> = ref(
   }
 );
 
-const imageURL = ref(product.value.imageURL);
+const imageURL = ref(getImageURL(product.value.imageURL));
 
 const buttonLabel = computed(() => {
   return props.mode === "update" ? "Update" : "Add";
