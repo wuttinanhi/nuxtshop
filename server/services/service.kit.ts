@@ -175,7 +175,11 @@ export class ServiceKit {
     if (!ServiceKit.servicekit && !ServiceKit.isStartInit) {
       ServiceKit.isStartInit = true;
 
-      await this.setupDatabase();
+      try {
+        await this.setupDatabase();
+      } catch (error) {
+        console.log("Error setting up database", error);
+      }
 
       if (process.env.MOCK === "true") {
         console.log("USING MOCK SERVICE");
