@@ -38,35 +38,29 @@ export class DatabaseSingleton {
     console.log("All tables dropped!");
 
     User.hasOne(Address, { as: "address", foreignKey: "userId" });
-    Address.belongsTo(User, { as: "user" });
+    Address.belongsTo(User, { as: "user", foreignKey: "userId" });
 
     User.hasOne(Cart, { foreignKey: "userId" });
-    Cart.belongsTo(User, { as: "user" });
+    Cart.belongsTo(User, { as: "user", foreignKey: "userId" });
     Cart.hasMany(OrderItem, { as: "items", foreignKey: "cartId" });
-    OrderItem.belongsTo(Cart, { as: "cart" });
+    OrderItem.belongsTo(Cart, { as: "cart", foreignKey: "cartId" });
 
     User.hasMany(Order, { foreignKey: "userId" });
     Order.belongsTo(User, { as: "user", foreignKey: "userId" });
-    Order.belongsTo(Address, { as: "delivery_address" });
+    Order.belongsTo(Address, {
+      as: "delivery_address",
+      foreignKey: "addressId",
+    });
 
     Order.hasMany(OrderItem, { as: "items", foreignKey: "orderId" });
-    OrderItem.belongsTo(Order, { as: "order" });
+    OrderItem.belongsTo(Order, { as: "order", foreignKey: "orderId" });
 
     Product.hasMany(OrderItem, { foreignKey: "productId" });
-    OrderItem.belongsTo(Product, { as: "product" });
+    OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
 
     await this.datasource.sync({ force: true });
     console.log("All models were synchronized successfully.");
-
     console.log("Synchronizing models done!");
-
-    // await Address.sync({ force: true });
-    // await Address.sync({ force: true });
-    // await User.sync({ force: true });
-    // await Product.sync({ force: true });
-    // await OrderItem.sync({ force: true });
-    // await Cart.sync({ force: true });
-    // await Order.sync({ force: true });
   }
 }
 
