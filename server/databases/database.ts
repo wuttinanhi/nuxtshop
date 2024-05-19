@@ -12,7 +12,9 @@ export class DatabaseSingleton {
 
       switch (process.env.DB_TYPE) {
         case "mysql":
-           // wait for implementation
+          // wait for implementation
+          console.log("ERROR! MySQL not implemented!");
+          break;
         case "postgres":
           console.log("Creating a new PostgreSQL connection...");
           DatabaseSingleton.datasource = new Sequelize({
@@ -32,9 +34,7 @@ export class DatabaseSingleton {
             storage: process.env.DB_STORAGE || "database.sqlite",
             logging: false,
           });
-        // wait for implementation
-        default:
-          DatabaseSingleton.datasource = DatabaseSingleton.createSQLite();
+          break;
       }
     }
 
