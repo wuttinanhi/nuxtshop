@@ -3,6 +3,10 @@ import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import { IOrderItem } from "~/types/entity";
 
+// import dialects pg, sqlite
+import pg from "pg";
+import sqlite3 from "sqlite3";
+
 export class DatabaseSingleton {
   declare static datasource: Sequelize;
 
@@ -19,6 +23,7 @@ export class DatabaseSingleton {
           console.log("Creating a new PostgreSQL connection...");
           DatabaseSingleton.datasource = new Sequelize({
             dialect: "postgres",
+            dialectModule: pg,
             host: process.env.DB_HOST,
             port: parseInt(parseInt(process.env.DB_PORT as any).toString()),
             username: process.env.DB_USER,
@@ -31,6 +36,7 @@ export class DatabaseSingleton {
           console.log("Creating a new SQLite connection...");
           DatabaseSingleton.datasource = new Sequelize({
             dialect: "sqlite",
+            dialectModule: sqlite3,
             storage: process.env.DB_STORAGE || "database.sqlite",
             logging: false,
           });
