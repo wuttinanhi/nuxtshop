@@ -12,6 +12,10 @@ export default defineEventHandler(async (event) => {
 
   const user = await serviceKit.authService.getUserFromToken(token);
 
+  if (!user || user.role !== "admin") {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const products = await serviceKit.productService.getAll();
 
   return products;

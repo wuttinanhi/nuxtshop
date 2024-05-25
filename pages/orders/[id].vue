@@ -4,27 +4,38 @@ import { UserRole } from "~/shared/enums/userrole.enum";
 import type { IOrder } from "~/types/entity";
 
 const order = ref<IOrder | null>(null);
+const loadError = ref<string | null>(null);
 const orderId = ref<number | null>(null);
 
 if (process.client) {
-  const userInject = inject(KEY_USER, undefined);
-  const token = ref(userInject?.token);
+  try {
+    const userInject = inject(KEY_USER, undefined);
+    const token = ref(userInject?.token);
 
-  // get order id from route params
-  const route = useRoute();
+    // get order id from route params
+    const route = useRoute();
 
-  // convert id to number
-  orderId.value = parseInt(route.params.id as string, 10);
+    // convert id to number
+    orderId.value = parseInt(route.params.id as string, 10);
 
-  const result = await $fetch(`/api/orders/info/${orderId.value}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token.value,
-    },
-  });
+    const result = await $fetch(`/api/orders/info/${orderId.value}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token.value,
+      },
+    });
 
-  order.value = result as IOrder;
+    order.value = result as IOrder;
+  } catch (error) {
+    const e = error as Error;
+    // if error message contains unauthorized
+    if (e.message.includes("401")) {
+      loadError.value = "Unauthorized";
+    } else {
+      loadError.value = e.message;
+    }
+  }
 }
 </script>
 
@@ -34,6 +45,10 @@ if (process.client) {
       <h3>Order Detail: {{ orderId }}</h3>
       <br />
       <OrderViewerDetail :order="order" :mode="UserRole.USER" />
+    </div>
+
+    <div v-if="loadError" class="text-center">
+      <h3>Error: {{ loadError }}</h3>
     </div>
   </ClientOnly>
 </template>

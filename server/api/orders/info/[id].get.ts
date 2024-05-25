@@ -26,6 +26,11 @@ export default defineEventHandler(async (event) => {
     return new Response("Order not Found", { status: 404 });
   }
 
+  // if user role is not admin and order is not belong to user then return unauthorized
+  if (user.role !== "admin" && order.user.id !== user.id) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   // if order status is waiting for payment then check payment status from stripe
   if (order.status === OrderStatus.WaitForPayment) {
     console.log(`Checking payment status for order ${order.id} from stripe...`);

@@ -8,10 +8,10 @@ import pg from "pg";
 import sqlite3 from "sqlite3";
 
 export class DatabaseSingleton {
-  declare static datasource: Sequelize;
+  private static datasource: Sequelize;
 
   public static getDatabase() {
-    if (!DatabaseSingleton.datasource) {
+    if (DatabaseSingleton.datasource === undefined) {
       console.log("Database using", process.env.DB_TYPE || "sqlite");
 
       switch (process.env.DB_TYPE) {
