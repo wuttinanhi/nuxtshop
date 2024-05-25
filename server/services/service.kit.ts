@@ -1,7 +1,7 @@
 import fs from "fs";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import { IAddress, IProduct } from "~/types/entity";
-import { DatabaseSingleton, Product, User } from "../databases/database";
+import { DatabaseSingleton, Order, Product, User } from "../databases/database";
 import type { IServiceKit } from "./defs/servicekit";
 import { AuthServiceMock } from "./mock/auth.mock";
 import { CartServiceMock } from "./mock/cart.mock";
@@ -13,10 +13,11 @@ import { CartServiceORM } from "./orm/cart.orm";
 import { OrderServiceORM } from "./orm/order.orm";
 import { ProductServiceORM } from "./orm/product.orm";
 import { UserServiceORM } from "./orm/user.orm";
+import { StripeService } from "./payments/stripe.service";
 
 export class ServiceKit {
   private static isStartInit = false;
-  private static servicekit: IServiceKit;
+  private static servicekit: IServiceKit<any>;
 
   public static async initMockService() {
     ServiceKit.servicekit = {
@@ -25,6 +26,7 @@ export class ServiceKit {
       orderService: new OrderServiceMock(),
       productService: new ProductServiceMock(),
       userService: new UserServiceMock(),
+      payService: new StripeService(),
     };
   }
 
@@ -39,51 +41,19 @@ export class ServiceKit {
       orderService: new OrderServiceORM(),
       productService: new ProductServiceORM(),
       userService: new UserServiceORM(),
+      payService: new StripeService(),
     };
-  }
-
-  public static async createAdminUser(svk: IServiceKit) {
-    console.log("Checking for admin user");
-
-    let adminUser = await User.findOne({
-      where: { email: "admin@example.com" },
-    });
-
-    if (adminUser) return;
-
-    console.log("Creating admin user");
-
-    const adminAddress: IAddress = {
-      addressText: "123 Admin St",
-      city: "Adminville",
-      state: "AD",
-      zip: "12345",
-    };
-
-    await svk.authService.register({
-      firstName: "Admin",
-      lastName: "User",
-      email: "admin@example.com",
-      password: "admin-password",
-      role: UserRole.ADMIN,
-      address: adminAddress,
-    });
-
-    const updatedAdminUser = await svk.userService.findByEmail(
-      "admin@example.com"
-    );
-    if (!updatedAdminUser) {
-      console.log("Failed to get admin user");
-      return;
-    }
-
-    await svk.userService.setRole(updatedAdminUser, UserRole.ADMIN);
-
-    console.log("Admin user created");
   }
 
   public static async createMockOrders() {
+    const orderCount = await Order.count();
+    if (orderCount > 0) {
+      console.log("Orders table not empty. Skipping creating mock orders");
+      return;
+    }
+
     console.log("Creating mock orders...");
+
     const serviceKit = await ServiceKit.get();
 
     const user = await serviceKit.userService.findById(1);
@@ -110,7 +80,14 @@ export class ServiceKit {
   }
 
   public static async createMockProduct() {
+    const productCount = await Product.count();
+    if (productCount > 0) {
+      console.log("Products table not empty. Skipping creating mock products");
+      return;
+    }
+
     console.log("Loading products");
+
     let rawdata = fs.readFileSync(
       `${process.cwd()}/public/static/products.json`,
       "utf8"
@@ -150,12 +127,43 @@ export class ServiceKit {
 
   public static async checkAdminUser() {
     const svk = await ServiceKit.get();
-    const adminUser = await svk.userService.findByEmail("admin@example.com");
+    console.log("Checking for admin user");
 
-    if (!adminUser) {
-      console.log("Admin user not found. Creating...");
-      await ServiceKit.createAdminUser(svk);
+    let adminUser = await User.findOne({
+      where: { email: "admin@example.com" },
+    });
+
+    if (adminUser) return;
+
+    console.log("Admin user not found. Creating...");
+
+    const adminAddress: IAddress = {
+      addressText: "123 Admin St",
+      city: "Adminville",
+      state: "AD",
+      zip: "12345",
+    };
+
+    await svk.authService.register({
+      firstName: "Admin",
+      lastName: "User",
+      email: "admin@example.com",
+      password: "admin-password",
+      role: UserRole.ADMIN,
+      address: adminAddress,
+    });
+
+    const updatedAdminUser = await svk.userService.findByEmail(
+      "admin@example.com"
+    );
+    if (!updatedAdminUser) {
+      console.log("Failed to get admin user");
+      return;
     }
+
+    await svk.userService.setRole(updatedAdminUser, UserRole.ADMIN);
+
+    console.log("Admin user created");
   }
 
   public static async setupDatabase() {
@@ -171,7 +179,7 @@ export class ServiceKit {
     }
   }
 
-  public static async get(): Promise<IServiceKit> {
+  public static async get(): Promise<IServiceKit<any>> {
     if (!ServiceKit.servicekit && !ServiceKit.isStartInit) {
       ServiceKit.isStartInit = true;
 

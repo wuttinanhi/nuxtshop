@@ -21,11 +21,17 @@ async function payOrder(order: IOrder) {
       headers: buildAuthHeader(),
     });
 
+    console.log(result);
+    const { url } = result;
+
+    // redirect to payment gateway
+    window.location.href = url;
+
     // alert user with confetti
-    alert("Order paid successfully 🎉");
+    // alert("Order paid successfully 🎉");
 
     // refresh page
-    location.reload();
+    // location.reload();
   } catch (error) {
     alert("Error when paying order");
   }

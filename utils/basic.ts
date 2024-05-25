@@ -17,3 +17,7 @@ export function calculateTotalPrice(products: IOrderItem[]) {
     return acc + item.product!.price * item.quantity;
   }, 0);
 }
+
+export function toStripeAmount(amount: number): number {
+  return Math.round(amount * 100);
+}

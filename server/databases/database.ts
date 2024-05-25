@@ -71,12 +71,10 @@ export class DatabaseSingleton {
   }
 
   public static async sync() {
-    console.log("Synchronizing models...");
-    await this.datasource.drop();
-    console.log("All tables dropped!");
-
-    await this.datasource.sync({ force: true });
-
+    // console.log("Synchronizing models...");
+    // await this.datasource.drop();
+    // console.log("All tables dropped!");
+    await this.datasource.sync({ alter: true });
     console.log("Synchronizing models done!");
   }
 }

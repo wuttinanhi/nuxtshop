@@ -23,6 +23,7 @@ export class AuthServiceORM implements IAuthService {
 
   private signJWTToken(user: IUser): string {
     const signObj = (user as User).toJSON();
+    signObj.password = undefined;
     return jwt.sign(signObj, AuthServiceORM.getJWTSecret());
   }
 
