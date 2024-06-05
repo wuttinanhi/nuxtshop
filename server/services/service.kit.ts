@@ -34,14 +34,19 @@ export class ServiceKit {
     DatabaseSingleton.getDatabase();
 
     const authService = new AuthServiceORM();
+    const userService = new UserServiceORM();
+    const cartService = new CartServiceORM(userService);
+    const orderService = new OrderServiceORM();
+    const productService = new ProductServiceORM();
+    const stripeService = new StripeService();
 
     ServiceKit.servicekit = {
       authService: authService,
-      cartService: new CartServiceORM(),
-      orderService: new OrderServiceORM(),
-      productService: new ProductServiceORM(),
-      userService: new UserServiceORM(),
-      payService: new StripeService(),
+      orderService: orderService,
+      productService: productService,
+      userService: userService,
+      payService: stripeService,
+      cartService: cartService,
     };
   }
 

@@ -11,8 +11,11 @@ export class DatabaseSingleton {
   private static datasource: Sequelize;
 
   public static getDatabase() {
-    if (DatabaseSingleton.datasource === undefined) {
-      console.log("Database using", process.env.DB_TYPE || "sqlite");
+    if (
+      DatabaseSingleton.datasource === undefined ||
+      DatabaseSingleton.datasource === null
+    ) {
+      // console.log("Database using", process.env.DB_TYPE || "sqlite");
 
       switch (process.env.DB_TYPE) {
         case "mysql":
@@ -68,6 +71,9 @@ export class DatabaseSingleton {
 
     Product.hasMany(OrderItem, { foreignKey: "productId" });
     OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
+
+    Product.hasOne(Stock, { as: "stock", foreignKey: "productId" });
+    Stock.belongsTo(Product, { as: "product", foreignKey: "productId" });
   }
 
   public static async sync() {
@@ -291,6 +297,30 @@ Order.init(
   },
   {
     tableName: "orders",
+    sequelize: DatabaseSingleton.getDatabase(),
+  }
+);
+
+export class Stock extends Model {
+  declare id: number;
+  declare productId: number;
+  declare quantity: number;
+}
+
+Stock.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "stocks",
     sequelize: DatabaseSingleton.getDatabase(),
   }
 );

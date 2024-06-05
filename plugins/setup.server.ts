@@ -5,7 +5,7 @@ let isRunBefore = false;
 export default defineNuxtPlugin((nuxtApp) => {
   // console.log("--- SETUP PLUGIN START ---");
 
-  if (isRunBefore) {
+  if (isRunBefore === true) {
     // console.log("Setup plugin already run before, skipping...");
     return;
   }

@@ -11,8 +11,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = await serviceKit.authService.getUserFromToken(token);
+  const userFromDB = await serviceKit.userService.findById(user.id!);
+  if (!userFromDB) {
+    return new Response("User not found", { status: 404 });
+  }
 
-  const cart = await serviceKit.cartService.getCart(user);
+  const cart = await serviceKit.cartService.getCart(userFromDB);
   if (!cart) {
     return new Response("Failed to get cart", { status: 500 });
   }

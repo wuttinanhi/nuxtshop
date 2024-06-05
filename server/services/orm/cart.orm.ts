@@ -7,9 +7,22 @@ import {
   User,
 } from "~/server/databases/database";
 import type { ICartService } from "../defs/cart.service";
+import { IUserService } from "../defs/user.service";
 
 export class CartServiceORM implements ICartService {
+  private userService: IUserService;
+
+  constructor(userService: IUserService) {
+    this.userService = userService;
+  }
+
   public async createCart(cart: ICart): Promise<ICart> {
+    // find the user by id
+    const user = await this.userService.findById(cart.userId);
+    if (!user) {
+      throw new Error("User not found when creating cart");
+    }
+
     const newCart = await Cart.create({
       userId: cart.userId,
     });
