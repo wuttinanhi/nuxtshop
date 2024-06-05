@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
-import type { ICart, IProduct } from "~/types/entity";
+import type { ICart, IOrder, IProduct } from "~/types/entity";
 import type { CartModifyRequest } from "~/types/general";
 
 if (process.client) {
@@ -36,14 +36,15 @@ if (process.client) {
         },
       });
 
-      console.log("result.ok", result.ok);
-
-      console.log("Order created");
-      console.log(result);
-
       refresh();
 
-      await navigateTo("/orders");
+      const order = result as IOrder;
+
+      console.log("======== Order created ========");
+      console.log(order);
+      console.log("===============================");
+
+      await navigateTo(`/orders/` + order.id);
     } catch (e) {
       console.error(e);
     }

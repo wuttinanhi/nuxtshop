@@ -17,6 +17,10 @@ export default defineEventHandler(async (event) => {
 
   const user = await serviceKit.authService.getUserFromToken(token);
 
+  if (!user || user.role !== "admin") {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const multipartFormData = await readMultipartFormData(event);
   if (!multipartFormData) {
     throw new Error("No multipart form data found");

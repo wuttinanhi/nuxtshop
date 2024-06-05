@@ -33,10 +33,10 @@ export default defineEventHandler(async (event) => {
   console.log("====================================");
 
   // create an order from the cart
-  await serviceKit.orderService.createOrderFromCart(cart);
+  const createdOrder = await serviceKit.orderService.createOrderFromCart(cart);
 
   // clear the cart
   await serviceKit.cartService.clearCart(user);
 
-  return new Response("Order created", { status: 201 });
+  return createdOrder;
 });

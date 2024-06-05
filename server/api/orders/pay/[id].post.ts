@@ -20,11 +20,16 @@ export default defineEventHandler(async (event) => {
   // convert id to number
   const id = parseInt(idparam, 10);
 
+  const order = await serviceKit.orderService.getOrder(id);
+  if (!order) {
+    return new Response("Order not Found", { status: 404 });
+  }
+
   console.log(
-    `User #${user.id} "${user.firstName} ${user.lastName}" is paying for order ${id}`
+    `User #${user.id} "${user.firstName} ${user.lastName}" is start paying for order ${order.id}`
   );
 
-  serviceKit.orderService.payForOrder(id);
+  const stripeSession = await serviceKit.payService.pay(order);
 
-  return user;
+  return stripeSession;
 });

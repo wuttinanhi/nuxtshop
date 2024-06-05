@@ -3,20 +3,27 @@ import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import { IOrderItem } from "~/types/entity";
 
+// import dialects pg, sqlite
+import pg from "pg";
+import sqlite3 from "sqlite3";
+
 export class DatabaseSingleton {
-  declare static datasource: Sequelize;
+  private static datasource: Sequelize;
 
   public static getDatabase() {
-    if (!DatabaseSingleton.datasource) {
+    if (DatabaseSingleton.datasource === undefined) {
       console.log("Database using", process.env.DB_TYPE || "sqlite");
 
       switch (process.env.DB_TYPE) {
         case "mysql":
-           // wait for implementation
+          // wait for implementation
+          console.log("ERROR! MySQL not implemented!");
+          break;
         case "postgres":
           console.log("Creating a new PostgreSQL connection...");
           DatabaseSingleton.datasource = new Sequelize({
             dialect: "postgres",
+            dialectModule: pg,
             host: process.env.DB_HOST,
             port: parseInt(parseInt(process.env.DB_PORT as any).toString()),
             username: process.env.DB_USER,
@@ -29,12 +36,11 @@ export class DatabaseSingleton {
           console.log("Creating a new SQLite connection...");
           DatabaseSingleton.datasource = new Sequelize({
             dialect: "sqlite",
+            dialectModule: sqlite3,
             storage: process.env.DB_STORAGE || "database.sqlite",
             logging: false,
           });
-        // wait for implementation
-        default:
-          DatabaseSingleton.datasource = DatabaseSingleton.createSQLite();
+          break;
       }
     }
 
@@ -65,12 +71,10 @@ export class DatabaseSingleton {
   }
 
   public static async sync() {
-    console.log("Synchronizing models...");
-    await this.datasource.drop();
-    console.log("All tables dropped!");
-
-    await this.datasource.sync({ force: true });
-
+    // console.log("Synchronizing models...");
+    // await this.datasource.drop();
+    // console.log("All tables dropped!");
+    await this.datasource.sync({ alter: true });
     console.log("Synchronizing models done!");
   }
 }
