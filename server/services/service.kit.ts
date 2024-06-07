@@ -164,7 +164,6 @@ export class ServiceKit {
       state: "AD",
       zip: "12345",
     };
-
     await svk.authService.register({
       firstName: "Admin",
       lastName: "User",
