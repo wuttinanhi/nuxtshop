@@ -86,6 +86,7 @@ export class ServiceKit {
     });
 
     await serviceKit.orderService.createOrderFromCart(cart);
+    await serviceKit.cartService.clearCart(user);
 
     console.log("Mock orders created");
   }
@@ -100,7 +101,7 @@ export class ServiceKit {
     console.log("Loading products");
 
     let rawdata = fs.readFileSync(
-      `${process.cwd()}/public/static/products.json`,
+      `${process.cwd()}/mocks/products.json`,
       "utf8"
     );
 
@@ -209,7 +210,7 @@ export class ServiceKit {
         console.log("Error setting up database", error);
       }
 
-      if (process.env.MOCK === "true") {
+      if (process.env.MOCK_SERVICE === "true") {
         console.log("USING MOCK SERVICE");
         await ServiceKit.initMockService();
       } else {
@@ -218,8 +219,12 @@ export class ServiceKit {
 
       await ServiceKit.checkAdminUser();
 
-      if (process.env.NODE_ENV !== "production") {
-        console.log("NODE_ENV is not production. Mocking...");
+      console.log("NODE_ENV =", process.env.NODE_ENV);
+      if (
+        process.env.NODE_ENV !== "production" ||
+        process.env.MOCK_DATA === "true"
+      ) {
+        console.log("Mocking Data...");
         await this.mockData();
       }
     }
