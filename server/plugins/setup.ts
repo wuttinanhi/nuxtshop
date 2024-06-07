@@ -1,17 +1,15 @@
-import { ServiceKit } from "~/server/services/service.kit";
+import { ServiceKit } from "../services/service.kit";
 
 let isRunBefore = false;
 
-export default defineNuxtPlugin((nuxtApp) => {
-  // console.log("--- SETUP PLUGIN START ---");
-
+export default defineNitroPlugin(() => {
   if (isRunBefore === true) {
     // console.log("Setup plugin already run before, skipping...");
     return;
   }
   isRunBefore = true;
 
-  console.log("--- SETUP PLUGIN RUNNING ---");
+  console.log("----- SETUP PLUGIN RUNNING -----");
 
   // triggering service kit for setup database
   ServiceKit.get();

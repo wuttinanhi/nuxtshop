@@ -1,7 +1,13 @@
 import fs from "fs";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import { IAddress, IProduct } from "~/types/entity";
-import { DatabaseSingleton, Order, Product, User } from "../databases/database";
+import {
+  DatabaseSingleton,
+  Order,
+  Product,
+  Stock,
+  User,
+} from "../databases/database";
 import type { IServiceKit } from "./defs/servicekit";
 import { AuthServiceMock } from "./mock/auth.mock";
 import { CartServiceMock } from "./mock/cart.mock";
@@ -113,7 +119,17 @@ export class ServiceKit {
           },
           { transaction }
         );
-        console.log(`added product ${newProduct.name}`);
+        const stock = await Stock.create(
+          {
+            productId: newProduct.id,
+            quantity: product.stock,
+          },
+          { transaction }
+        );
+
+        console.log(
+          `added product ${newProduct.name} (stock ${stock.quantity})`
+        );
       }
 
       transaction.commit();

@@ -1,20 +1,24 @@
 import type { IProductService } from "@/server/services/defs/product.service";
 import type { IProduct } from "@/types/entity";
 import { Op } from "sequelize";
-import { Product } from "~/server/databases/database";
+import { Product, Stock } from "~/server/databases/database";
 
 export class ProductServiceORM implements IProductService {
   init(): Promise<void> {
     throw new Error("Method not implemented.");
   }
   public async createProduct(product: IProduct): Promise<IProduct> {
-    const newProduct = Product.build({
+    const newProduct = await Product.create({
       name: product.name,
       description: product.description,
       price: product.price,
       imageURL: product.imageURL,
     });
-    return newProduct.save();
+    await Stock.create({
+      productId: newProduct.id,
+      quantity: 0,
+    });
+    return newProduct;
   }
 
   public async getAll(): Promise<IProduct[]> {

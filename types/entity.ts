@@ -9,6 +9,7 @@ export interface IProduct {
   imageURL?: string;
   imageData?: any;
   __clientDeleted?: boolean;
+  stock?: number;
 }
 
 export interface IOrderItem {

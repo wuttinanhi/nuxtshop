@@ -11,10 +11,7 @@ export class DatabaseSingleton {
   private static datasource: Sequelize;
 
   public static getDatabase() {
-    if (
-      DatabaseSingleton.datasource === undefined ||
-      DatabaseSingleton.datasource === null
-    ) {
+    if (!DatabaseSingleton.datasource) {
       // console.log("Database using", process.env.DB_TYPE || "sqlite");
 
       switch (process.env.DB_TYPE) {
@@ -47,6 +44,7 @@ export class DatabaseSingleton {
       }
     }
 
+    // console.log("Creating database connection done!");
     return DatabaseSingleton.datasource;
   }
 
@@ -72,8 +70,18 @@ export class DatabaseSingleton {
     Product.hasMany(OrderItem, { foreignKey: "productId" });
     OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
 
-    Product.hasOne(Stock, { as: "stock", foreignKey: "productId" });
-    Stock.belongsTo(Product, { as: "product", foreignKey: "productId" });
+    Product.hasOne(Stock, {
+      as: "stock",
+      foreignKey: "productId",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Stock.belongsTo(Product, {
+      as: "product",
+      foreignKey: "productId",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
   }
 
   public static async sync() {

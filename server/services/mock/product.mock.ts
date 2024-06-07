@@ -8,9 +8,9 @@ export class ProductServiceMock implements IProductService {
   private static products: IProduct[] = [];
 
   public async init() {
-    console.log("Loading products");
+    console.log("ProductServiceMock: Loading products");
     let rawdata = fs.readFileSync(
-      `${process.cwd()}/public/static/products.json`,
+      `${process.cwd()}/mocks/products.json`,
       "utf8"
     );
     ProductServiceMock.products = JSON.parse(rawdata);
