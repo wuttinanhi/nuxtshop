@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { IProduct } from "@/types/entity";
 import { getImageURL } from "~/shared/utils";
 
 const props = defineProps({
   product: {
-    type: Object as () => IProduct,
+    type: Object as () => any,
     required: true,
   },
   index: {
@@ -27,6 +26,7 @@ const product = ref(props.product);
       />
     </td>
     <td>{{ product.name }}</td>
+    <td>{{ product.stock }}</td>
     <td>{{ product.price }}</td>
     <td>
       <div class="d-flex align-items-center gap-2">

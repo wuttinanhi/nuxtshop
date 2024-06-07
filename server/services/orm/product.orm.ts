@@ -24,7 +24,7 @@ export class ProductServiceORM implements IProductService {
       await Stock.create(
         {
           productId: newProduct.id,
-          quantity: 0,
+          quantity: product.stock ? product.stock : 0,
         },
         { transaction }
       );
@@ -41,6 +41,7 @@ export class ProductServiceORM implements IProductService {
 
   public async getAll(): Promise<IProduct[]> {
     return Product.findAll({
+      order: [["id", "ASC"]],
       include: [
         {
           model: Stock,
@@ -91,7 +92,10 @@ export class ProductServiceORM implements IProductService {
           throw new Error("Stock not found");
         }
         dbStock.quantity = product.stock;
-        await dbStock.save({ transaction });
+        const updatedStock = await dbStock.save({ transaction });
+        console.log(
+          `updated stock for product ${id}: ${updatedStock.quantity}`
+        );
       }
 
       await dbProduct.save({ transaction });

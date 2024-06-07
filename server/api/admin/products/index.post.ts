@@ -37,6 +37,12 @@ export default defineEventHandler(async (event) => {
     throw new Error("Price not found in request");
   }
 
+  const stockRaw = getFormDataValue(multipartFormData, "stock", false);
+  if (!stockRaw) {
+    throw new Error("Product ID not found in request");
+  }
+  const stock = parseInt(stockRaw, 10);
+
   // generate image UUID
   const imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
 
@@ -56,6 +62,7 @@ export default defineEventHandler(async (event) => {
     description,
     price: price,
     imageURL: imageUUID,
+    stock,
   };
 
   const createdProduct = await serviceKit.productService.createProduct(
