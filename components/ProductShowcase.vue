@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IProduct } from "@/types/entity";
+import type { IProduct, IStock } from "@/types/entity";
 import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 import { getImageURL } from "~/shared/utils";
 
@@ -8,7 +8,14 @@ const user = ref(userInject?.user);
 const cartInject = inject(KEY_CART, undefined);
 
 const { pending, data } = await useFetch("/api/products/all", {
-  transform: (data) => data as IProduct[],
+  transform: (data) => {
+    const totype = data as IProduct[];
+    const have_stock = totype.map((product) => {
+      product.stock = (product.stock as any as IStock).quantity;
+      return product;
+    });
+    return have_stock;
+  },
 });
 
 async function addToCart(product: IProduct) {
@@ -35,9 +42,16 @@ async function addToCart(product: IProduct) {
           <div class="text-center">
             <h3 class="card-title">{{ product.name }}</h3>
             <h5 class="card-text my-4">{{ product.price }}</h5>
-            <button class="btn btn-primary mt-3" @click="addToCart(product)">
+            <button
+              class="btn btn-primary mt-3"
+              @click="addToCart(product)"
+              :disabled="product.stock === 0"
+            >
               Add to cart
             </button>
+
+            <br />
+            <p>Available: {{ product.stock }}</p>
           </div>
         </div>
       </div>

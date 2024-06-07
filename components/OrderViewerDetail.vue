@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { KEY_USER } from "~/shared/enums/keys";
-import { OrderStatus, orderStatusToHuman } from "~/shared/enums/orderstatus.enum";
+import {
+  OrderStatus,
+  orderStatusToHuman,
+} from "~/shared/enums/orderstatus.enum";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import type { IOrder } from "~/types/entity";
 
@@ -77,7 +80,7 @@ async function confirmReceived(order: IOrder) {
     },
     body: JSON.stringify({
       status: status,
-    })
+    }),
   });
 
   console.log(result);
@@ -90,15 +93,19 @@ async function confirmReceived(order: IOrder) {
       <h5 class="card-title">Order #{{ order.id }}</h5>
     </div>
     <div class="card-body">
-      <p class="card-text mb-3">
+      <p class="card-text mb-3"></p>
       <div v-if="order.address">
         <strong>Shipping:</strong> Address: {{ addressToString(order.address) }}
       </div>
-      <div v-else>
-        <strong>Shipping:</strong> Address: Not available
-      </div>
-        <strong>Status:</strong> {{ orderStatusToHuman(order.status) }}
+      <div v-else><strong>Shipping:</strong> Address: Not available</div>
+      <p>
+        <strong>Status:</strong>
+        {{ orderStatusToHuman(order.status) }}
+        <span class="text-secondary"
+          >(please wait for a moment for status to be updated)</span
+        >
       </p>
+      <br />
 
       <OrderItemTable :items="order.items" />
     </div>
@@ -106,31 +113,49 @@ async function confirmReceived(order: IOrder) {
       <div class="d-flex justify-content-between">
         <div>
           <div v-if="$props.mode === UserRole.USER">
-            <button class="btn btn-primary" v-show="order.status ===  OrderStatus.WaitForPayment" @click="payOrder(order)" >
+            <button
+              class="btn btn-primary"
+              v-show="order.status === OrderStatus.WaitForPayment"
+              @click="payOrder(order)"
+            >
               Pay Now
             </button>
 
-            <button class="btn btn-success" v-show="order.status === OrderStatus.Shipping" @click="confirmReceived(order)" >
+            <button
+              class="btn btn-success"
+              v-show="order.status === OrderStatus.Shipping"
+              @click="confirmReceived(order)"
+            >
               Confirm Received
             </button>
           </div>
 
           <div v-if="$props.mode === UserRole.ADMIN" class="d-flex gap-1">
-            <button class="btn btn-primary" @click="updateOrderStatus(order.id, OrderStatus.Shipping)" v-if="order.status === 'preparing'">
+            <button
+              class="btn btn-primary"
+              @click="updateOrderStatus(order.id, OrderStatus.Shipping)"
+              v-if="order.status === 'preparing'"
+            >
               Update to Shipping
             </button>
 
-            <button class="btn btn-danger" @click="updateOrderStatus(order.id, OrderStatus.Canceled)" v-if="order.status !== 'canceled'">
+            <button
+              class="btn btn-danger"
+              @click="updateOrderStatus(order.id, OrderStatus.Canceled)"
+              v-if="order.status !== 'canceled'"
+            >
               Cancel
             </button>
 
-            <GenericDialog :modal-options="{
-              modalID: 'orderDetailModal',
-              modalTitle: 'Order Detail',
-              openbuttonLabel: 'View',
-              modalSize: 'xl'
-            }">
-              <OrderItemTable :items="order.items"/>
+            <GenericDialog
+              :modal-options="{
+                modalID: 'orderDetailModal',
+                modalTitle: 'Order Detail',
+                openbuttonLabel: 'View',
+                modalSize: 'xl',
+              }"
+            >
+              <OrderItemTable :items="order.items" />
 
               <div class="d-flex flex-row-reverse align-items-center">
                 <h5 class="card-title">Total: {{ order.totalPrice }}</h5>

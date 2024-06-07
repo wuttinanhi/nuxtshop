@@ -10,7 +10,7 @@ export default defineNitroPlugin(() => {
   isRunBefore = true;
 
   console.log("----- SETUP PLUGIN RUNNING -----");
-
+  
   // triggering service kit for setup database
   ServiceKit.get();
 });

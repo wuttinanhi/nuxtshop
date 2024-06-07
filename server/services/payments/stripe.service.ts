@@ -39,7 +39,10 @@ export class StripeService implements IPaymentService<Stripe.Checkout.Session> {
       success_url: `${process.env.PAY_SUCCESS_URL}/?order_id=${order.id}`,
       cancel_url: `${process.env.PAY_CANCEL_URL}/?order_id=${order.id}`,
       payment_intent_data: {
-        metadata: { order_id: order.id! },
+        metadata: {
+          order_id: order.id!,
+          ref_uuid: order.ref_uuid,
+        },
       },
     });
 
@@ -48,7 +51,7 @@ export class StripeService implements IPaymentService<Stripe.Checkout.Session> {
 
   async getOrderStatus(order: IOrder): Promise<any> {
     const paymentIntents = await this.getStripe().paymentIntents.search({
-      query: `metadata[\'order_id\']:\'${order.id!}\'`,
+      query: `metadata[\'ref_uuid\']:\'${order.ref_uuid}\'`,
     });
 
     if (paymentIntents.data.length <= 0) {

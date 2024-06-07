@@ -66,6 +66,9 @@ if (process.client) {
         Authorization: "Bearer " + token.value,
       },
       body: JSON.stringify(modifyRequest),
+      onResponseError: (error: any) => {
+        alert(error.response._data.message);
+      },
     });
 
     console.log(result);

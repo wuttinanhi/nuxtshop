@@ -68,4 +68,11 @@ export interface IOrder {
   address?: IAddress;
   totalPrice: number;
   status: OrderStatus;
+  ref_uuid: string;
+}
+
+export interface IStock {
+  id: number;
+  quantity: number;
+  productId: number;
 }

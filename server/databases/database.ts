@@ -79,8 +79,6 @@ export class DatabaseSingleton {
     Stock.belongsTo(Product, {
       as: "product",
       foreignKey: "productId",
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE",
     });
   }
 
@@ -280,6 +278,7 @@ export class Order extends Model {
   declare addressId: number;
   declare totalPrice: number;
   declare status: OrderStatus;
+  declare ref_uuid: string;
 
   // associations
   declare user: User;
@@ -300,6 +299,10 @@ Order.init(
     },
     status: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    ref_uuid: {
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
   },
