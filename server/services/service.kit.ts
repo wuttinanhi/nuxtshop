@@ -220,7 +220,7 @@ export class ServiceKit {
       await ServiceKit.checkAdminUser();
 
       if (process.env.NODE_ENV !== "production") {
-        console.log("ENV is not production. Mocking...");
+        console.log("NODE_ENV is not production. Mocking...");
         await this.mockData();
       }
     }
