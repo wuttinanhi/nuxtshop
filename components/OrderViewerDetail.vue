@@ -142,7 +142,7 @@ async function confirmReceived(order: IOrder) {
             <button
               class="btn btn-danger"
               @click="updateOrderStatus(order.id, OrderStatus.Canceled)"
-              v-if="order.status !== 'canceled'"
+              v-if="order.status !== 'canceled' && order.status !== 'delivered'"
             >
               Cancel
             </button>

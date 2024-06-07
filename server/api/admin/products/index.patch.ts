@@ -32,6 +32,12 @@ export default defineEventHandler(async (event) => {
   }
   const productID = parseInt(productIDRaw, 10);
 
+  const stockRaw = getFormDataValue(multipartFormData, "stock", false);
+  if (!stockRaw) {
+    throw new Error("Product ID not found in request");
+  }
+  const stock = parseInt(stockRaw, 10);
+
   const oldProduct = await serviceKit.productService.getByID(productID);
   if (!oldProduct) {
     throw new Error("Product not found in database");
@@ -48,7 +54,7 @@ export default defineEventHandler(async (event) => {
     // build image path
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await fs.mkdir(uploadDir, { recursive: true });
-    const imagePath = path.join(uploadDir, `${imageUUID}.png`);
+    imagePath = path.join(uploadDir, `${imageUUID}.png`);
 
     // save image to disk
     await fs.writeFile(imagePath, image);
@@ -61,17 +67,20 @@ export default defineEventHandler(async (event) => {
   const priceRaw = getFormDataValue(multipartFormData, "price");
   const price = priceRaw ? parseFloat(priceRaw) : undefined;
 
-  const newProduct: IProduct = {
+  const updateProduct: IProduct = {
     id: oldProduct.id,
     name: name || oldProduct.name,
     description: description || oldProduct.description,
     price: price || oldProduct.price,
     imageURL: image ? imageUUID : oldProduct.imageURL,
+    stock: stock,
   };
 
+  console.log(updateProduct);
+
   const updatedProduct = await serviceKit.productService.updateProduct(
-    newProduct.id!,
-    newProduct
+    updateProduct.id!,
+    updateProduct
   );
 
   return updatedProduct;

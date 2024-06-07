@@ -25,3 +25,7 @@ export const KEY_CART = Symbol("KEY_CART") as InjectionKey<{
   changeQuantity: (product: IProduct, quantity: number) => Promise<void>;
   totalPrice: ComputedRef<number>;
 }>;
+
+export const ADMIN_REFRESH = Symbol("ADMIN_REFRESH") as InjectionKey<{
+  refresh: () => void;
+}>;

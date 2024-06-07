@@ -67,7 +67,7 @@ export class OrderServiceORM implements IOrderService {
           throw new Error(
             `Not enough stock for product #${item.product!.id} ${
               item.product!.name
-            }`
+            } (have ${stock.quantity})`
           );
         }
 

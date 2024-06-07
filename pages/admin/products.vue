@@ -2,10 +2,9 @@
 // ...
 </script>
 <template>
-    <ClientOnly>
-        <h1>Admin Products</h1>
-        <br />
-
-        <AdminProductViewer />
-    </ClientOnly>
+  <ClientOnly>
+    <h1>Admin Products</h1>
+    <br />
+    <AdminProductViewerTable />
+  </ClientOnly>
 </template>
