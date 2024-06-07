@@ -1,7 +1,13 @@
 import fs from "fs";
 import { UserRole } from "~/shared/enums/userrole.enum";
 import { IAddress, IProduct } from "~/types/entity";
-import { DatabaseSingleton, Order, Product, User } from "../databases/database";
+import {
+  DatabaseSingleton,
+  Order,
+  Product,
+  Stock,
+  User,
+} from "../databases/database";
 import type { IServiceKit } from "./defs/servicekit";
 import { AuthServiceMock } from "./mock/auth.mock";
 import { CartServiceMock } from "./mock/cart.mock";
@@ -34,14 +40,19 @@ export class ServiceKit {
     DatabaseSingleton.getDatabase();
 
     const authService = new AuthServiceORM();
+    const userService = new UserServiceORM();
+    const cartService = new CartServiceORM(userService);
+    const orderService = new OrderServiceORM();
+    const productService = new ProductServiceORM();
+    const stripeService = new StripeService();
 
     ServiceKit.servicekit = {
       authService: authService,
-      cartService: new CartServiceORM(),
-      orderService: new OrderServiceORM(),
-      productService: new ProductServiceORM(),
-      userService: new UserServiceORM(),
-      payService: new StripeService(),
+      orderService: orderService,
+      productService: productService,
+      userService: userService,
+      payService: stripeService,
+      cartService: cartService,
     };
   }
 
@@ -108,7 +119,17 @@ export class ServiceKit {
           },
           { transaction }
         );
-        console.log(`added product ${newProduct.name}`);
+        const stock = await Stock.create(
+          {
+            productId: newProduct.id,
+            quantity: product.stock,
+          },
+          { transaction }
+        );
+
+        console.log(
+          `added product ${newProduct.name} (stock ${stock.quantity})`
+        );
       }
 
       transaction.commit();
@@ -143,7 +164,6 @@ export class ServiceKit {
       state: "AD",
       zip: "12345",
     };
-
     await svk.authService.register({
       firstName: "Admin",
       lastName: "User",
@@ -199,7 +219,7 @@ export class ServiceKit {
       await ServiceKit.checkAdminUser();
 
       if (process.env.NODE_ENV !== "production") {
-        console.log("ENV is not production. Mocking...");
+        console.log("NODE_ENV is not production. Mocking...");
         await this.mockData();
       }
     }

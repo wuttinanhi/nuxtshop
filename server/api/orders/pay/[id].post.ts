@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   }
 
   console.log(
-    `User #${user.id} "${user.firstName} ${user.lastName}" is start paying for order ${order.id}`
+    `User #${user.id} "${user.firstName} ${user.lastName}" is start paying for order ${order.id} (UUID: ${order.ref_uuid})`
   );
 
   const stripeSession = await serviceKit.payService.pay(order);

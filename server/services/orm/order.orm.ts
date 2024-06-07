@@ -1,9 +1,11 @@
+import crypto from "crypto";
 import {
   Address,
   DatabaseSingleton,
   Order,
   OrderItem,
   Product,
+  Stock,
   User,
 } from "~/server/databases/database";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
@@ -43,6 +45,7 @@ export class OrderServiceORM implements IOrderService {
           AddressId: deliveryAddress.id,
           addressId: deliveryAddress.id,
           deliveryAddressId: deliveryAddress.id,
+          ref_uuid: crypto.randomUUID(),
         },
         { transaction }
       );
@@ -50,7 +53,25 @@ export class OrderServiceORM implements IOrderService {
       console.log(`preparing order #${order.id}`);
 
       for (const item of cart.items) {
-        const orderItem = await OrderItem.create(
+        // check stock if available
+        const stock = await Stock.findOne({
+          where: { productId: item.product!.id },
+          transaction,
+          lock: true,
+        });
+        if (!stock) {
+          throw new Error(`Product #${item.product!.id} not found in stock!`);
+        }
+
+        if (stock.quantity < item.quantity) {
+          throw new Error(
+            `Not enough stock for product #${item.product!.id} ${
+              item.product!.name
+            }`
+          );
+        }
+
+        await OrderItem.create(
           {
             product: item.product,
             quantity: item.quantity,
@@ -62,9 +83,13 @@ export class OrderServiceORM implements IOrderService {
           { transaction }
         );
 
-        console.log(
-          `added order item ${item.product!.name} to order #${order.id}`
-        );
+        // cut stock
+        stock.quantity -= item.quantity;
+        await stock.save({ transaction });
+
+        // console.log(
+        //   `added order item ${item.product!.name} to order #${order.id}`
+        // );
       }
 
       transaction.commit();
@@ -75,7 +100,7 @@ export class OrderServiceORM implements IOrderService {
     } catch (error) {
       await transaction.rollback();
       console.log("Error creating order: " + error);
-      throw new Error("Failed to create order");
+      throw new Error("Failed to create order: " + error);
     }
   }
 
@@ -97,6 +122,11 @@ export class OrderServiceORM implements IOrderService {
     const order = (await this.getOrder(id)) as Order;
     if (!order) {
       throw new Error("Order not found");
+    }
+
+    // order status must be WaitForPayment
+    if (order.status !== OrderStatus.WaitForPayment) {
+      throw new Error("Order is not waiting for payment");
     }
 
     // update order status to preparing
@@ -182,6 +212,11 @@ export class OrderServiceORM implements IOrderService {
       throw new Error("Order not found");
     }
 
+    // if order status Delivered: cannot change status
+    if (order.status === OrderStatus.Delivered) {
+      throw new Error("Order already delivered");
+    }
+
     order.status = status;
     await order.save();
 
@@ -192,6 +227,11 @@ export class OrderServiceORM implements IOrderService {
     const order = (await this.getOrder(id)) as Order;
     if (!order) {
       throw new Error("Order not found");
+    }
+
+    // order status must be Shipping
+    if (order.status !== OrderStatus.Shipping) {
+      throw new Error("Order is not shipping");
     }
 
     order.status = OrderStatus.Delivered;

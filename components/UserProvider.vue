@@ -84,17 +84,21 @@ if (process.client) {
     }
   }
 
-  async function logout() {
+  async function logout(redirectTo = "/") {
     console.log("logging out...");
     localStorage.removeItem("token");
     user.value = undefined;
-    navigateTo("/");
+    navigateTo(redirectTo);
   }
 
   try {
     await loaduser();
   } catch (error) {
     console.log("No user logged in:", (error as Error).message);
+    if (localStorage.getItem("token")) {
+      console.log("Invalid token, logging out...");
+      logout("/account");
+    }
   }
 
   provide(KEY_USER, {

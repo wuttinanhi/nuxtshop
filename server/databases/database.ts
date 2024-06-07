@@ -11,8 +11,8 @@ export class DatabaseSingleton {
   private static datasource: Sequelize;
 
   public static getDatabase() {
-    if (DatabaseSingleton.datasource === undefined) {
-      console.log("Database using", process.env.DB_TYPE || "sqlite");
+    if (!DatabaseSingleton.datasource) {
+      // console.log("Database using", process.env.DB_TYPE || "sqlite");
 
       switch (process.env.DB_TYPE) {
         case "mysql":
@@ -44,6 +44,7 @@ export class DatabaseSingleton {
       }
     }
 
+    // console.log("Creating database connection done!");
     return DatabaseSingleton.datasource;
   }
 
@@ -68,6 +69,17 @@ export class DatabaseSingleton {
 
     Product.hasMany(OrderItem, { foreignKey: "productId" });
     OrderItem.belongsTo(Product, { as: "product", foreignKey: "productId" });
+
+    Product.hasOne(Stock, {
+      as: "stock",
+      foreignKey: "productId",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Stock.belongsTo(Product, {
+      as: "product",
+      foreignKey: "productId",
+    });
   }
 
   public static async sync() {
@@ -266,6 +278,7 @@ export class Order extends Model {
   declare addressId: number;
   declare totalPrice: number;
   declare status: OrderStatus;
+  declare ref_uuid: string;
 
   // associations
   declare user: User;
@@ -288,9 +301,37 @@ Order.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    ref_uuid: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
+    },
   },
   {
     tableName: "orders",
+    sequelize: DatabaseSingleton.getDatabase(),
+  }
+);
+
+export class Stock extends Model {
+  declare id: number;
+  declare productId: number;
+  declare quantity: number;
+}
+
+Stock.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "stocks",
     sequelize: DatabaseSingleton.getDatabase(),
   }
 );

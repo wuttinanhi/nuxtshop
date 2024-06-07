@@ -1,24 +1,41 @@
 import type { ICart, IOrderItem, IProduct, IUser } from "@/types/entity";
+import { Transaction } from "sequelize";
 import {
   Address,
   Cart,
+  DatabaseSingleton,
   OrderItem,
   Product,
+  Stock,
   User,
 } from "~/server/databases/database";
 import type { ICartService } from "../defs/cart.service";
+import { IUserService } from "../defs/user.service";
 
 export class CartServiceORM implements ICartService {
+  private userService: IUserService;
+
+  constructor(userService: IUserService) {
+    this.userService = userService;
+  }
+
   public async createCart(cart: ICart): Promise<ICart> {
+    // find the user by id
+    const user = await this.userService.findById(cart.userId);
+    if (!user) {
+      throw new Error("User not found when creating cart");
+    }
+
     const newCart = await Cart.create({
       userId: cart.userId,
     });
     return newCart.save();
   }
 
-  public async getCart(user: IUser): Promise<ICart> {
+  public async getCart(user: IUser, transaction?: Transaction): Promise<ICart> {
     const cart = await Cart.findOne({
       where: { userId: user.id },
+      transaction,
       include: [
         {
           model: OrderItem,
@@ -50,28 +67,66 @@ export class CartServiceORM implements ICartService {
   }
 
   public async addToCart(user: IUser, orderItem: IOrderItem): Promise<ICart> {
-    const cart = await this.getCart(user);
+    const transaction = await DatabaseSingleton.getDatabase().transaction();
 
-    // find order items where cartId is equal to cart.id and productId is equal to product.product.id
-    const items = await OrderItem.findOne({
-      where: { cartId: cart.id, productId: orderItem.productId },
-    });
+    try {
+      const cart = await this.getCart(user, transaction);
 
-    // if the product is already in the cart, increment the quantity
-    if (items) {
-      items.quantity += orderItem.quantity;
-      await items.save();
-    } else {
-      // if the product is not in the cart, add it to the cart
-      const newOrderItems = await OrderItem.create({
-        cartId: cart.id,
-        productId: orderItem.productId,
-        quantity: orderItem.quantity,
+      // get product data
+      const product = await Product.findOne({
+        where: { id: orderItem.productId },
+        transaction,
       });
-      await newOrderItems.save();
-    }
+      if (!product) {
+        throw new Error(`Product #${orderItem.productId} not found`);
+      }
 
-    return this.getCart(user);
+      // check stock quantity
+      const stock = await Stock.findOne({
+        where: { productId: product.id },
+        transaction,
+      });
+      if (!stock) {
+        throw new Error(
+          `Product #${product.id} ${product.name} stock not found`
+        );
+      }
+
+      if (stock.quantity < orderItem.quantity) {
+        throw new Error(
+          `Not enough stock for product #${product.id} ${product.name}`
+        );
+      }
+
+      // find order items where cartId is equal to cart.id and productId is equal to product.product.id
+      const items = await OrderItem.findOne({
+        where: { cartId: cart.id, productId: product.id },
+        transaction,
+      });
+
+      // if the product is already in the cart, increment the quantity
+      if (items) {
+        items.quantity += orderItem.quantity;
+        await items.save({ transaction });
+      } else {
+        // if the product is not in the cart, add it to the cart
+        const newOrderItems = await OrderItem.create({
+          cartId: cart.id,
+          productId: product.id,
+          quantity: orderItem.quantity,
+          transaction,
+        });
+        await newOrderItems.save({ transaction });
+      }
+
+      await transaction.commit();
+
+      return this.getCart(user);
+    } catch (error) {
+      console.error("Error add to cart", error);
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   public async removeFromCart(user: IUser, product: IProduct): Promise<ICart> {
