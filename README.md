@@ -5,17 +5,17 @@ I'm experimenting with Nuxt 3 to build a shopping site. Some features are unstab
 
 # Screenshots
 
-<img src="./images/index.png" width="50%" />
-<img src="./images/cart.png" width="50%" /> 
+<img src="./images/index.png" width="80%" />
+<img src="./images/cart.png" width="80%" /> 
 
-<img src="./images/pay_stripe.png" width="50%" />
-<img src="./images/order_list.png" width="50%" />
-<img src="./images/order_detail.png" width="50%" />
+<img src="./images/pay_stripe.png" width="80%" />
+<img src="./images/order_list.png" width="80%" />
+<img src="./images/order_detail.png" width="80%" />
 
-<img src="./images/admin_product_view.png" width="50%" />
-<img src="./images/admin_product_dialog.png" width="50%" />
+<img src="./images/admin_product_view.png" width="80%" />
+<img src="./images/admin_product_dialog.png" width="80%" />
 
-<img src="./images/admin_order_view.png" width="50%" />
+<img src="./images/admin_order_view.png" width="80%" />
 
 
 ## Setup
