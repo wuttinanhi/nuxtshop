@@ -1,5 +1,5 @@
-# volumes:
-#   db-data:
+volumes:
+  dev-db-data:
 
 services:
   db:
@@ -17,8 +17,8 @@ services:
       POSTGRES_PASSWORD: mynuxtshop
       POSTGRES_USER: mynuxtshop
       POSTGRES_DB: mynuxtshop
-    # volumes:
-    #   - db-data:/var/lib/postgresql/dataresql/data
+    volumes:
+      - dev-db-data:/var/lib/postgresql/dataresql/data
     ports:
       - "5432:5432"
 

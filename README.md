@@ -2,7 +2,6 @@
 
 I'm experimenting with Nuxt 3 to build a shopping site. Some features are unstable but worth trying.
 
-
 # Screenshots
 
 <img src="./images/index.png" width="80%" />
@@ -17,7 +16,6 @@ I'm experimenting with Nuxt 3 to build a shopping site. Some features are unstab
 
 <img src="./images/admin_order_view.png" width="80%" />
 
-
 ## Setup
 
 Make sure to install the dependencies:
@@ -29,6 +27,8 @@ yarn install
 ## Development
 
 Start the development server on `http://localhost:3000`:
+
+The development admin credential is `admin@example.com` with password `admin`
 
 ```bash
 yarn dev

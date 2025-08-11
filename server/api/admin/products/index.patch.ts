@@ -1,87 +1,89 @@
-import { ServiceKit } from "@/server/services/service.kit";
-import type { IProduct } from "@/types/entity";
-import { getFormDataValue } from "@/utils/server";
+import {ServiceKit} from "@/server/services/service.kit";
+import type {IProduct} from "@/types/entity";
+import {getFormDataValue} from "@/utils/server";
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
 
+
 export default defineEventHandler(async (event) => {
-  const serviceKit = await ServiceKit.get();
+    const serviceKit = await ServiceKit.get();
 
-  let token: string;
-  try {
-    token = await serviceKit.authService.AUTH_GUARD(event);
-  } catch (_e) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+    let token: string;
+    try {
+        token = await serviceKit.authService.AUTH_GUARD(event);
+    } catch (_e) {
+        return new Response("Unauthorized", {status: 401});
+    }
 
-  const user = await serviceKit.authService.getUserFromToken(token);
+    const user = await serviceKit.authService.getUserFromToken(token);
 
-  if (!user || user.role !== "admin") {
-    return new Response("Unauthorized", { status: 401 });
-  }
+    if (!user || user.role !== "admin") {
+        return new Response("Unauthorized", {status: 401});
+    }
 
-  const multipartFormData = await readMultipartFormData(event);
-  if (!multipartFormData) {
-    throw new Error("No multipart form data found");
-  }
 
-  const productIDRaw = getFormDataValue(multipartFormData, "id", false);
-  if (!productIDRaw) {
-    throw new Error("Product ID not found in request");
-  }
-  const productID = parseInt(productIDRaw, 10);
+    const multipartFormData = await readMultipartFormData(event);
+    if (!multipartFormData) {
+        throw new Error("No multipart form data found");
+    }
 
-  const stockRaw = getFormDataValue(multipartFormData, "stock", false);
-  if (!stockRaw) {
-    throw new Error("Product ID not found in request");
-  }
-  const stock = parseInt(stockRaw, 10);
+    const productIDRaw = getFormDataValue(multipartFormData, "id", false);
+    if (!productIDRaw) {
+        throw new Error("Product ID not found in request");
+    }
+    const productID = parseInt(productIDRaw, 10);
 
-  const oldProduct = await serviceKit.productService.getByID(productID);
-  if (!oldProduct) {
-    throw new Error("Product not found in database");
-  }
+    const stockRaw = getFormDataValue(multipartFormData, "stock", false);
+    if (!stockRaw) {
+        throw new Error("Product ID not found in request");
+    }
+    const stock = parseInt(stockRaw, 10);
 
-  let imageUUID: string | undefined = undefined;
-  let imagePath: string | undefined = undefined;
+    const oldProduct = await serviceKit.productService.getByID(productID);
+    if (!oldProduct) {
+        throw new Error("Product not found in database");
+    }
 
-  const image = getFormDataValue(multipartFormData, "image", true);
-  if (image) {
-    // generate image UUID
-    imageUUID = `SELFHOST_products-${crypto.randomUUID()}`;
+    let imageUUID: string | undefined = undefined;
+    let imagePath: string | undefined = undefined;
 
-    // build image path
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-    imagePath = path.join(uploadDir, `${imageUUID}.png`);
+    const image = getFormDataValue(multipartFormData, "image", true);
+    if (image) {
+        // generate image UUID
+        imageUUID = `SELFHOST_products_${crypto.randomUUID()}`;
 
-    // save image to disk
-    await fs.writeFile(imagePath, image);
+        // build image path
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        await fs.mkdir(uploadDir, {recursive: true});
+        imagePath = path.join(uploadDir, `${imageUUID}.png`);
 
-    console.log("saving product image to", imagePath);
-  }
+        // save image to disk
+        await fs.writeFile(imagePath, image);
 
-  const name = getFormDataValue(multipartFormData, "name");
-  const description = getFormDataValue(multipartFormData, "description");
-  const priceRaw = getFormDataValue(multipartFormData, "price");
-  const price = priceRaw ? parseFloat(priceRaw) : undefined;
+        console.log("saving product image to", imagePath);
+    }
 
-  const updateProduct: IProduct = {
-    id: oldProduct.id,
-    name: name || oldProduct.name,
-    description: description || oldProduct.description,
-    price: price || oldProduct.price,
-    imageURL: image ? imageUUID : oldProduct.imageURL,
-    stock: stock,
-  };
+    const name = getFormDataValue(multipartFormData, "name");
+    const description = getFormDataValue(multipartFormData, "description");
+    const priceRaw = getFormDataValue(multipartFormData, "price");
+    const price = priceRaw ? parseFloat(priceRaw) : undefined;
 
-  console.log(updateProduct);
+    const updateProduct: IProduct = {
+        id: oldProduct.id,
+        name: name || oldProduct.name,
+        description: description || oldProduct.description,
+        price: price || oldProduct.price,
+        imageURL: image ? imageUUID : oldProduct.imageURL,
+        stock: stock,
+    };
 
-  const updatedProduct = await serviceKit.productService.updateProduct(
-    updateProduct.id!,
-    updateProduct
-  );
+    console.log(updateProduct);
 
-  return updatedProduct;
+    const updatedProduct = await serviceKit.productService.updateProduct(
+        updateProduct.id!,
+        updateProduct
+    );
+
+    return updatedProduct;
 });

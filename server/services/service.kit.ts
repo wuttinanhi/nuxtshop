@@ -17,10 +17,10 @@ import {StripeService} from "./payments/stripe.service";
 
 export class ServiceKit {
     private static isStartInit = false;
-    private static servicekit: IServiceKit<any>;
-
+    private static serviceKit: IServiceKit<any>;
+    
     public static async initMockService() {
-        ServiceKit.servicekit = {
+        ServiceKit.serviceKit = {
             authService: new AuthServiceMock(),
             cartService: new CartServiceMock(),
             orderService: new OrderServiceMock(),
@@ -40,7 +40,7 @@ export class ServiceKit {
         const productService = new ProductServiceORM();
         const stripeService = new StripeService();
 
-        ServiceKit.servicekit = {
+        ServiceKit.serviceKit = {
             authService: authService,
             orderService: orderService,
             productService: productService,
@@ -94,13 +94,13 @@ export class ServiceKit {
 
         console.log("Loading products");
 
-        let rawdata = fs.readFileSync(
+        let rawData = fs.readFileSync(
             `${process.cwd()}/mocks/products.json`,
             "utf8"
         );
 
         // loop through the products and save them to the database
-        const products: IProduct[] = JSON.parse(rawdata);
+        const products: IProduct[] = JSON.parse(rawData);
         const transaction = await DatabaseSingleton.getDatabase().transaction();
 
         try {
@@ -127,10 +127,10 @@ export class ServiceKit {
                 );
             }
 
-            transaction.commit();
+            await transaction.commit();
         } catch (error) {
             console.error("Error loading products", error);
-            transaction.rollback();
+            await transaction.rollback();
         }
 
         console.log("Products loaded");
@@ -142,7 +142,7 @@ export class ServiceKit {
     }
 
     public static async checkAdminUser() {
-        const svk = await ServiceKit.get();
+        const serviceKit = await ServiceKit.get();
         console.log("Checking for admin user");
 
         let adminUser = await User.findOne({
@@ -155,20 +155,21 @@ export class ServiceKit {
 
         const adminAddress: IAddress = {
             addressText: "123 Admin St",
-            city: "Adminville",
+            city: "Admin ville",
             state: "AD",
             zip: "12345",
         };
-        await svk.authService.register({
+
+        await serviceKit.authService.register({
             firstName: "Admin",
             lastName: "User",
             email: "admin@example.com",
-            password: "admin-password",
+            password: "admin",
             role: UserRole.ADMIN,
             address: adminAddress,
         });
 
-        const updatedAdminUser = await svk.userService.findByEmail(
+        const updatedAdminUser = await serviceKit.userService.findByEmail(
             "admin@example.com"
         );
         if (!updatedAdminUser) {
@@ -176,7 +177,7 @@ export class ServiceKit {
             return;
         }
 
-        await svk.userService.setRole(updatedAdminUser, UserRole.ADMIN);
+        await serviceKit.userService.setRole(updatedAdminUser, UserRole.ADMIN);
 
         console.log("Admin user created");
     }
@@ -195,7 +196,7 @@ export class ServiceKit {
     }
 
     public static async get(): Promise<IServiceKit<any>> {
-        if (!ServiceKit.servicekit && !ServiceKit.isStartInit) {
+        if (!ServiceKit.serviceKit && !ServiceKit.isStartInit) {
             ServiceKit.isStartInit = true;
 
             try {
@@ -214,13 +215,13 @@ export class ServiceKit {
             await ServiceKit.checkAdminUser();
 
             console.log("NODE_ENV =", process.env.NODE_ENV);
-            
+
             if (process.env.MOCK_DATA === "true") {
                 console.log("Mocking Data...");
                 await this.mockData();
             }
         }
 
-        return ServiceKit.servicekit;
+        return ServiceKit.serviceKit;
     }
 }
