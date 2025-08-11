@@ -2,7 +2,7 @@ FROM node:lts-alpine as build
 # ENV NODE_ENV=production
 RUN yarn global add nuxt
 WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "pnpm-lock.yaml", "./"]
 RUN yarn install --production --silent
 COPY . .
 RUN yarn build
