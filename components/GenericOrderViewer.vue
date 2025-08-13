@@ -1,11 +1,12 @@
-<script setup lang="ts">
-import { KEY_USER } from "~/shared/enums/keys";
-import { OrderStatus } from "~/shared/enums/orderstatus.enum";
-import { UserRole } from "~/shared/enums/userrole.enum";
-import type { IOrder } from "~/types/entity";
+<script lang="ts" setup>
+import {KEY_USER} from "~/shared/enums/keys";
+import {OrderStatus} from "~/shared/enums/orderstatus.enum";
+import {UserRole} from "~/shared/enums/userrole.enum";
+import type {IOrder} from "~/types/entity";
 
 interface GenericOrderViewerProps {
   mode: UserRole;
+  showUserData: boolean;
 }
 
 const props = defineProps<GenericOrderViewerProps>();
@@ -16,12 +17,12 @@ const userInject = inject(KEY_USER, undefined);
 const token = ref(userInject?.token);
 
 const tabs = [
-  { title: "All", status: OrderStatus.All },
-  { title: "Wait for Payment", status: OrderStatus.WaitForPayment },
-  { title: "Preparing", status: OrderStatus.Preparing },
-  { title: "Shipping", status: OrderStatus.Shipping },
-  { title: "Delivered", status: OrderStatus.Delivered },
-  { title: "Canceled", status: OrderStatus.Canceled },
+  {title: "All", status: OrderStatus.All},
+  {title: "Wait for Payment", status: OrderStatus.WaitForPayment},
+  {title: "Preparing", status: OrderStatus.Preparing},
+  {title: "Shipping", status: OrderStatus.Shipping},
+  {title: "Delivered", status: OrderStatus.Delivered},
+  {title: "Canceled", status: OrderStatus.Canceled},
 ];
 
 function changeTab(newTab: OrderStatus) {
@@ -62,12 +63,12 @@ const {
 
   <div v-else>
     <ul class="nav nav-pills nav-fill">
-      <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.status">
+      <li v-for="(tab, index) in tabs" :key="tab.status" class="nav-item">
         <a
-          class="nav-link"
-          :class="{ active: currentTab === tab.status }"
-          href="#"
-          @click="changeTab(tab.status)"
+            :class="{ active: currentTab === tab.status }"
+            class="nav-link"
+            href="#"
+            @click="changeTab(tab.status)"
         >
           {{ tab.title }}
         </a>
@@ -76,9 +77,10 @@ const {
 
     <div v-for="(order, index) in orders" :key="order.id" class="mt-5">
       <OrderViewerDetail
-        :order="order"
-        :mode="props.mode"
-        v-if="currentTab === OrderStatus.All || currentTab === order.status"
+          v-if="currentTab === OrderStatus.All || currentTab === order.status"
+          :mode="props.mode"
+          :order="order"
+          :show-user-data="props.showUserData"
       />
     </div>
 
