@@ -97,8 +97,8 @@ async function confirmReceived(order: IOrder) {
         <strong>Customer:</strong> {{ order.user.firstName }} {{ order.user.lastName }} ({{ order.user.email }})
       </div>
 
-      <div v-if="order.address">
-        <strong>Shipping Address:</strong> {{ addressToString(order.address) }}
+      <div v-if="order.delivery_address	">
+        <strong>Shipping Address:</strong> {{ addressToString(order.delivery_address) }}
       </div>
       <div v-else><strong>Shipping Address:</strong> Not available</div>
 
