@@ -215,19 +215,4 @@ export class OrderServiceORM implements IOrderService {
 
         return order;
     }
-
-    async received(id: number): Promise<void> {
-        const order = (await this.getOrder(id)) as Order;
-        if (!order) {
-            throw new Error("Order not found");
-        }
-
-        // order status must be Shipping
-        if (order.status !== OrderStatus.Shipping) {
-            throw new Error("Order is not shipping");
-        }
-
-        order.status = OrderStatus.Delivered;
-        await order.save();
-    }
 }

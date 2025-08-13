@@ -1,5 +1,7 @@
 import {ServiceKit} from "~/server/services/service.kit";
+import {OrderStatus} from "#shared/enums/orderstatus.enum";
 
+// route for let user set order status from shipping to received
 export default defineEventHandler(async (event) => {
     const serviceKit = await ServiceKit.get();
 
@@ -29,11 +31,15 @@ export default defineEventHandler(async (event) => {
         return new Response("Forbidden", {status: 403});
     }
 
-    console.log(
-        `User #${user.id} "${user.firstName} ${user.lastName}" is receiving order #${id}`
-    );
+    // order status must be Shipping
+    if (order.status !== OrderStatus.Shipping) {
+        throw new Error("Order must be shipping status");
+    }
 
-    serviceKit.orderService.received(id);
+    await serviceKit.orderService.updateOrderStatus(order.id!, OrderStatus.Delivered);
+    
+    console.log(`User #${user.id} "${user.firstName} ${user.lastName}" is received order #${id}`);
+
 
     return user;
 });

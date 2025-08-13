@@ -1,5 +1,6 @@
 import {ServiceKit} from "~/server/services/service.kit";
-import {stringToOrderStatus} from "~/shared/enums/orderstatus.enum";
+import {OrderStatus, stringToOrderStatus} from "~/shared/enums/orderstatus.enum";
+import {checkOrderStatusWithStripeWrapper} from "~/server/api/orders/wrapper";
 
 export default defineEventHandler(async (event) => {
     const serviceKit = await ServiceKit.get();
@@ -21,7 +22,6 @@ export default defineEventHandler(async (event) => {
     // console.log("filtering orders by status =", query.status);
     // console.log("user =", user);
 
-
     const orderStatus = stringToOrderStatus(query.status as string);
 
     const orders = await serviceKit.orderService.filter({
@@ -29,7 +29,12 @@ export default defineEventHandler(async (event) => {
         user,
     });
 
-    // console.log("found", orders.length, "orders");
+    const ordersChecked = await Promise.all(orders.map(order => {
+        if (order.status === OrderStatus.WaitForPayment) {
+            return checkOrderStatusWithStripeWrapper(serviceKit, order);
+        }
+        return order;
+    }));
 
-    return orders;
+    return ordersChecked;
 });
