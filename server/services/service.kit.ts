@@ -18,7 +18,7 @@ import {StripeService} from "./payments/stripe.service";
 export class ServiceKit {
     private static isStartInit = false;
     private static serviceKit: IServiceKit<any>;
-    
+
     public static async initMockService() {
         ServiceKit.serviceKit = {
             authService: new AuthServiceMock(),
@@ -181,6 +181,7 @@ export class ServiceKit {
 
         console.log("Admin user created");
     }
+
 
     public static async setupDatabase() {
         const db = DatabaseSingleton.getDatabase();

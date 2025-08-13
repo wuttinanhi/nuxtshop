@@ -4,24 +4,31 @@ import {toStripeAmount} from "~/utils/basic";
 import {IPaymentService} from "../defs/payment.service";
 
 export class StripeService implements IPaymentService<Stripe.Checkout.Session> {
+    protected static STRIPE_CURRENCY: string;
     private stripeInstance: Stripe;
+
+    protected static getCurrency() {
+        if (!this.STRIPE_CURRENCY) {
+            this.STRIPE_CURRENCY = process.env.STRIPE_CURRENCY || 'usd';
+        }
+        return this.STRIPE_CURRENCY;
+    }
 
     async pay(order: IOrder): Promise<Stripe.Checkout.Session> {
         // convert to stripe No-cost orders
         // https://docs.stripe.com/payments/checkout/no-cost-orders
         const line_items: any = order.items.map((item) => ({
             price_data: {
-                currency: "usd",
+                currency: StripeService.getCurrency(),
                 unit_amount: toStripeAmount(item.product!.price),
                 product_data: {
-                    name: item.product?.name,
+                    name: item.product!.name
                 },
             },
             quantity: item.quantity,
         }));
-
-
-        return await this.getStripe().checkout.sessions.create({
+        
+        return this.getStripe().checkout.sessions.create({
             line_items,
             mode: "payment",
             success_url: `${process.env.PAY_SUCCESS_URL}/?order_id=${order.id}`,
