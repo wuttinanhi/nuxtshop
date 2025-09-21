@@ -5,7 +5,7 @@ services:
   nuxtshop:
     depends_on:
       - db
-    image: nuxtshop
+    image: docker.io/wuttinanhi/nuxtshop
     build:
       context: .
       dockerfile: ./Dockerfile
