@@ -1,5 +1,5 @@
 volumes:
-  dev-db-data:
+  nuxtshop_dev_db:
 
 services:
   db:
@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: mynuxtshop
       POSTGRES_DB: mynuxtshop
     volumes:
-      - dev-db-data:/var/lib/postgresql/data
+      - nuxtshop_dev_db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
