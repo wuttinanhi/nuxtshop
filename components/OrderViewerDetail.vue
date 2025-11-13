@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import {KEY_USER} from "~/shared/enums/keys";
-import {OrderStatus, orderStatusToHuman,} from "~/shared/enums/orderstatus.enum";
-import {UserRole} from "~/shared/enums/userrole.enum";
-import type {IOrder} from "~/types/entity";
+import { KEY_USER } from "~/shared/enums/keys";
+import {
+  OrderStatus,
+  orderStatusToHuman,
+} from "~/shared/enums/orderstatus.enum";
+import { UserRole } from "~/shared/enums/userrole.enum";
+import type { IOrder } from "~/types/entity";
 
 interface OrderViewerDetailProps {
   order: IOrder;
@@ -23,7 +26,7 @@ async function payOrder(order: IOrder) {
     });
 
     console.log(result);
-    const {url} = result;
+    const { url } = result;
 
     // redirect to payment gateway
     window.location.href = url;
@@ -94,41 +97,46 @@ async function confirmReceived(order: IOrder) {
       <p class="card-text mb-3"></p>
 
       <div v-if="props.showUserData">
-        <strong>Customer:</strong> {{ order.user.firstName }} {{ order.user.lastName }} ({{ order.user.email }})
+        <strong>Customer:</strong> {{ order.user.firstName }}
+        {{ order.user.lastName }} ({{ order.user.email }})
       </div>
 
-      <div v-if="order.delivery_address	">
-        <strong>Shipping Address:</strong> {{ addressToString(order.delivery_address) }}
+      <div v-if="order.delivery_address">
+        <strong>Shipping Address:</strong>
+        {{ addressToString(order.delivery_address) }}
       </div>
       <div v-else><strong>Shipping Address:</strong> Not available</div>
 
       <p>
         <strong>Status:</strong>
         {{ orderStatusToHuman(order.status) }}
-        <span class="text-secondary"
-        >(please wait for a moment for status to be updated)</span
+        <span
+          v-if="order.status === OrderStatus.WaitForPayment"
+          class="text-secondary"
         >
+          (please wait for a moment for status to be updated)
+        </span>
       </p>
-      <br/>
+      <br />
 
-      <OrderItemTable :items="order.items"/>
+      <OrderItemTable :items="order.items" />
     </div>
     <div class="card-footer text-muted">
       <div class="d-flex justify-content-between">
         <div>
           <div v-if="$props.mode === UserRole.USER">
             <button
-                v-show="order.status === OrderStatus.WaitForPayment"
-                class="btn btn-primary"
-                @click="payOrder(order)"
+              v-show="order.status === OrderStatus.WaitForPayment"
+              class="btn btn-primary"
+              @click="payOrder(order)"
             >
               Pay Now
             </button>
 
             <button
-                v-show="order.status === OrderStatus.Shipping"
-                class="btn btn-success"
-                @click="confirmReceived(order)"
+              v-show="order.status === OrderStatus.Shipping"
+              class="btn btn-success"
+              @click="confirmReceived(order)"
             >
               Confirm Received
             </button>
@@ -136,30 +144,36 @@ async function confirmReceived(order: IOrder) {
 
           <div v-if="$props.mode === UserRole.ADMIN" class="d-flex gap-1">
             <button
-                v-if="order.status === 'preparing'"
-                class="btn btn-primary"
-                @click="updateOrderStatus(order.id, OrderStatus.Shipping)"
+              v-if="order.status === 'preparing'"
+              class="btn btn-primary"
+              @click="updateOrderStatus(order.id, OrderStatus.Shipping)"
             >
               Update to Shipping
             </button>
 
             <button
-                v-if="order.status !== 'canceled' && order.status !== 'delivered'"
-                class="btn btn-danger"
-                @click="updateOrderStatus(order.id, OrderStatus.Canceled)"
+              v-if="order.status !== 'canceled' && order.status !== 'delivered'"
+              class="btn btn-danger"
+              @click="updateOrderStatus(order.id, OrderStatus.Canceled)"
             >
               Cancel
             </button>
 
             <GenericDialog
-                :modal-options="{
+              :modal-options="{
                 modalID: 'orderDetailModal',
                 modalTitle: 'Order Detail',
                 openbuttonLabel: 'View',
                 modalSize: 'xl',
               }"
             >
-              <OrderItemTable :items="order.items"/>
+              <div v-if="order.delivery_address" class="my-5">
+                <strong>Shipping Address:</strong>
+                {{ addressToString(order.delivery_address) }}
+              </div>
+              <div v-else><strong>Shipping Address:</strong> Not available</div>
+
+              <OrderItemTable :items="order.items" />
 
               <div class="d-flex flex-row-reverse align-items-center">
                 <h5 class="card-title">Total: {{ order.totalPrice }}</h5>

@@ -16,21 +16,31 @@
 // });
 
 // server/plugins/setup.js
-import {NitroApp} from "nitropack";
-import {ServiceKit} from "~/server/services/service.kit";
+import { ServiceKit } from "~/server/services/service.kit";
+import { DatabaseSingleton } from "../databases/database";
+import { MockWrapper } from "../services/mock/mockwrapper";
+import { UserSetup } from "../setups/users.setup";
 
-export default async (_nitroApp: NitroApp) => {
-    // Runs once when the server starts
-    console.log('--------------------- Server setup complete')
+// Runs once when the server starts
 
+export default defineNitroPlugin(async (nitroApp) => {
+  console.log("----- 🚀  Server setup start -----");
 
-    // Example: Initialize database connection, load config, etc.
-    // await initializeDatabase().
+  console.log("NODE_ENV =", process.env.NODE_ENV);
 
-    console.log("----- SETUP PLUGIN RUNNING (server/plugins/setup.ts) -----");
+  try {
+    await DatabaseSingleton.setupDatabase();
+  } catch (error) {
+    console.log("Error setting up database", error);
+  }
 
-    // triggering service kit for setup database
-    ServiceKit.get().then(r => {
-        console.log("--- Setup complete");
-    });
-}
+  await UserSetup.checkAdminUser();
+
+  if (process.env.MOCK_DATA === "true") {
+    console.log("Mocking data...");
+    await MockWrapper.mockData(await ServiceKit.get());
+    console.log("Mocking data done...");
+  }
+
+  console.log("----- ✅ Server setup complete -----");
+});

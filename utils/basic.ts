@@ -13,6 +13,8 @@ export function buildAuthHeader() {
 }
 
 export function calculateTotalPrice(products: IOrderItem[]) {
+  if (!products || products.length === 0) return 0;
+
   return products.reduce((acc, item) => {
     return acc + item.product!.price * item.quantity;
   }, 0);
