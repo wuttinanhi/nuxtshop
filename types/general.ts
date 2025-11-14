@@ -5,3 +5,7 @@ export interface CartModifyRequest {
 }
 
 export type AdminProductFormMode = "create" | "update";
+
+export type WithTurnstile<T> = T & {
+  turnstileAnswer: string;
+};

@@ -3,9 +3,14 @@ import { KEY_CART, KEY_USER } from "~/shared/enums/keys";
 import type { ICart, IOrder, IProduct } from "~/types/entity";
 import type { CartModifyRequest } from "~/types/general";
 
-if (process.client) {
+if (import.meta.client) {
   const userInject = inject(KEY_USER, undefined);
   const token = ref(userInject?.token);
+  // const cart = ref<ICart | null>(null);
+
+  if (import.meta.dev) {
+    console.log("CartProvider token", token.value);
+  }
 
   let { data: cart, refresh } = await useFetch(() => "/api/carts/me", {
     method: "GET",
@@ -18,6 +23,10 @@ if (process.client) {
     },
     watch: [token],
   });
+
+  // if (cartValue.value) {
+  //   cart.value = cartValue.value;
+  // }
 
   function getCart() {
     return cart.value;
@@ -71,7 +80,7 @@ if (process.client) {
       },
     });
 
-    console.log(result);
+    console.log("addToCart fetch response", result);
 
     refresh();
   }

@@ -10,7 +10,11 @@ import type {
 export const KEY_USER = Symbol("KEY_USER") as InjectionKey<{
   user: Ref<IUser | undefined>;
   token: Ref<string | undefined>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    turnstileAnswer?: string
+  ) => Promise<void>;
   register: (data: IUserRegister) => Promise<void>;
   updateInfo: (data: IUserInfo) => Promise<void>;
   logout: () => void;

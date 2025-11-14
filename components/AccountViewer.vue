@@ -2,13 +2,15 @@
 import { ref } from "vue";
 import { KEY_USER } from "~/shared/enums/keys";
 import type { IUserInfo, IUserRegister } from "~/types/entity";
+import type { WithTurnstile } from "~/types/general";
+import Turnstile from "./utils/Turnstile.vue";
 
 const injectUser = inject(KEY_USER, undefined);
 const user = ref(injectUser?.user);
 
 const formMode = ref("login");
 
-const userForm: Ref<IUserInfo> = ref(
+const userForm: Ref<WithTurnstile<IUserInfo>> = ref(
   user.value
     ? (user.value as any)
     : {
@@ -25,11 +27,21 @@ const userForm: Ref<IUserInfo> = ref(
           zip: "",
         },
         role: "user",
+        turnstileAnswer: "",
       }
 );
 
 function login() {
-  injectUser?.login(userForm.value.email, userForm.value.password!);
+  try {
+    injectUser?.login(
+      userForm.value.email,
+      userForm.value.password!,
+      userForm.value.turnstileAnswer
+    );
+  } catch (error) {
+    alert("Error logging in");
+    console.log("error login", error);
+  }
 }
 
 function register() {
@@ -42,6 +54,14 @@ async function saveUser() {
 
 function changeMode() {
   formMode.value = formMode.value === "login" ? "register" : "login";
+}
+
+// HANDLE TURNSTILE EMIT EVENT
+function handleTurnstileVerify(token: string | null) {
+  if (token) {
+    console.log("Token received in parent:", token);
+    userForm.value.turnstileAnswer = token;
+  }
 }
 </script>
 
@@ -92,6 +112,8 @@ function changeMode() {
         <h3>Your Info</h3>
         <UserInfoForm :user="userForm" />
       </div>
+
+      <Turnstile @resp="handleTurnstileVerify" />
 
       <div v-if="formMode === 'login'" class="d-flex gap-2 mt-5">
         <button type="submit" class="btn btn-primary" @click="login">

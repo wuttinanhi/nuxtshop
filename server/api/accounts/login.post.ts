@@ -1,4 +1,5 @@
 import { ServiceKit } from "~/server/services/service.kit";
+import { validateTurnstileRequestWrapper } from "~/server/utils/turnstile";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = await ServiceKit.get();
@@ -13,11 +14,14 @@ export default defineEventHandler(async (event) => {
     return new Response("Bad request", { status: 400 });
   }
 
-  const { email, password } = body;
+  const { email, password, turnstileAnswer } = body;
 
   if (!email || !password) {
     return new Response("Bad request", { status: 400 });
   }
+
+  // Validate turnstile answer
+  await validateTurnstileRequestWrapper(turnstileAnswer);
 
   const token = await serviceKit.authService.login(email, password);
 

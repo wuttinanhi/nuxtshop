@@ -3,7 +3,7 @@ import { ClientAuthService } from "~/clients/auth.client";
 import { KEY_USER } from "~/shared/enums/keys";
 import type { IUser, IUserInfo, IUserRegister } from "~/types/entity";
 
-if (process.client) {
+if (import.meta.client) {
   const user: Ref<IUser | undefined> = ref(undefined);
   const token: Ref<string | undefined> = ref(undefined);
 
@@ -13,25 +13,27 @@ if (process.client) {
     user.value = userData;
   }
 
-  async function login(email: string, password: string) {
-    try {
-      const res: any = await $fetch("/api/accounts/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
+  async function login(
+    email: string,
+    password: string,
+    turnstileAnswer?: string
+  ) {
+    const res: any = await $fetch("/api/accounts/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password, turnstileAnswer }),
+    });
 
-      if (!res.token) {
-        throw new Error("Invalid login");
-      }
-
-      localStorage.setItem("token", res.token);
-
-      await loaduser();
-
-      window.location.href = "/";
-    } catch (error) {
-      alert("Error logging in");
+    if (!res.token) {
+      throw new Error("Invalid login");
     }
+
+    localStorage.setItem("token", res.token);
+
+    await loaduser();
+
+    window.location.href = "/";
+
+    return res;
   }
 
   async function register(data: IUserRegister) {
