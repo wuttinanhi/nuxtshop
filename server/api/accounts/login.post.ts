@@ -24,6 +24,13 @@ export default defineEventHandler(async (event) => {
   await validateTurnstileRequestWrapper(turnstileAnswer);
 
   const token = await serviceKit.authService.login(email, password);
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Invalid Login",
+      data: { error: "Invalid Login" },
+    });
+  }
 
   return { token };
 });

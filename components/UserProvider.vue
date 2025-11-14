@@ -37,33 +37,11 @@ if (import.meta.client) {
   }
 
   async function register(data: IUserRegister) {
-    try {
-      const res: any = await $fetch("/api/accounts/register", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-
-      console.log(res);
-
-      alert("User registered successfully");
-      await navigateTo("/account", { replace: true });
-      return;
-    } catch (error) {
-      const e = error as Error;
-      console.log(e.name, "=>", e.message);
-
-      if (e.name.includes("FetchError")) {
-        const response = await (error as any).response;
-        const data = response._data;
-
-        if (String(data).includes("exists")) {
-          alert("User already exists");
-          return;
-        }
-
-        alert("Error registering user: " + data);
-      }
-    }
+    const res: any = await $fetch("/api/accounts/register", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    return res;
   }
 
   async function updateInfo(data: IUserInfo) {

@@ -46,6 +46,20 @@ if (import.meta.client) {
     }
   });
 }
+
+function resetWidget() {
+  if (el && window.turnstile) {
+    console.log("Resetting Turnstile widget:", el);
+    window.turnstile.reset(el.value);
+    emit("resp", null); // Also emit null to clear parent's token
+  } else {
+    console.warn("Cannot reset widget, ID or Turnstile API not found.");
+  }
+}
+
+defineExpose({
+  resetWidget,
+});
 </script>
 
 <template>

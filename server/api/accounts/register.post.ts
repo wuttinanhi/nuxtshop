@@ -15,6 +15,11 @@ export default defineEventHandler(async (event) => {
       return new Response("Bad request", { status: 400 });
     }
 
+    let turnstileAnswer = body.turnstileAnswer;
+
+    // Validate turnstile answer
+    await validateTurnstileRequestWrapper(turnstileAnswer);
+
     const registeData = body as IUserRegister;
     await serviceKit.authService.register(registeData);
 

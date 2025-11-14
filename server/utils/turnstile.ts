@@ -71,7 +71,6 @@ export async function validateTurnstileRequestWrapper(
     throw createError({
       statusCode: 400,
       statusMessage: "Turnstile validation failed",
-      data: validationResult, // Pass the error codes to the client
     });
   }
 

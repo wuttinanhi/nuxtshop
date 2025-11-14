@@ -10,6 +10,10 @@ const user = ref(injectUser?.user);
 
 const formMode = ref("login");
 
+type TurnstileComponentInstance = InstanceType<typeof Turnstile>;
+
+const turnstileComponentRef = ref<TurnstileComponentInstance | null>(null);
+
 const userForm: Ref<WithTurnstile<IUserInfo>> = ref(
   user.value
     ? (user.value as any)
@@ -31,21 +35,61 @@ const userForm: Ref<WithTurnstile<IUserInfo>> = ref(
       }
 );
 
-function login() {
+async function login() {
   try {
-    injectUser?.login(
+    const res = await injectUser?.login(
       userForm.value.email,
       userForm.value.password!,
       userForm.value.turnstileAnswer
     );
+
+    console.log("login resp", res);
   } catch (error) {
-    alert("Error logging in");
-    console.log("error login", error);
+    if (error instanceof Error) {
+      console.log(error.name, error.message);
+
+      if (error.message.includes("turnstileAnswer not set")) {
+        alert("Please verify you are human");
+        return;
+      }
+
+      alert("Error logging in");
+      console.log("error login unhandled", error);
+    }
+  } finally {
+    turnstileComponentRef.value?.resetWidget();
   }
 }
 
-function register() {
-  injectUser?.register(userForm.value as any as IUserRegister);
+async function register() {
+  try {
+    const res = await injectUser?.register(
+      userForm.value as any as IUserRegister
+    );
+
+    console.log(res);
+
+    alert("User registered successfully");
+    await navigateTo("/account", { replace: true });
+    return;
+  } catch (error) {
+    const e = error as Error;
+    console.log(e.name, "=>", e.message);
+
+    if (e.name.includes("FetchError")) {
+      const response = await (error as any).response;
+      const data = response._data;
+
+      if (String(data).includes("exists")) {
+        alert("User already exists");
+        return;
+      }
+
+      alert("Error registering user: " + data);
+    }
+  } finally {
+    turnstileComponentRef.value?.resetWidget();
+  }
 }
 
 async function saveUser() {
@@ -58,10 +102,8 @@ function changeMode() {
 
 // HANDLE TURNSTILE EMIT EVENT
 function handleTurnstileVerify(token: string | null) {
-  if (token) {
-    console.log("Token received in parent:", token);
-    userForm.value.turnstileAnswer = token;
-  }
+  console.log("Token received in parent:", token);
+  userForm.value.turnstileAnswer = token ? token : "";
 }
 </script>
 
@@ -113,7 +155,9 @@ function handleTurnstileVerify(token: string | null) {
         <UserInfoForm :user="userForm" />
       </div>
 
-      <Turnstile @resp="handleTurnstileVerify" />
+      <div class="mt-5">
+        <Turnstile @resp="handleTurnstileVerify" ref="turnstileComponentRef" />
+      </div>
 
       <div v-if="formMode === 'login'" class="d-flex gap-2 mt-5">
         <button type="submit" class="btn btn-primary" @click="login">
