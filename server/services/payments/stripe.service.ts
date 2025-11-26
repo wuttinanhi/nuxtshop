@@ -3,7 +3,7 @@ import { IOrder } from "~/types/entity";
 import { toStripeAmount } from "~/utils/basic";
 import { IPaymentService } from "../defs/payment.service";
 
-export class StripeService implements IPaymentService<Stripe.Checkout.Session> {
+export class StripeService implements IPaymentService {
   protected static STRIPE_CURRENCY: string;
   private stripeInstance: Stripe;
 
@@ -42,7 +42,15 @@ export class StripeService implements IPaymentService<Stripe.Checkout.Session> {
     });
   }
 
-  async getOrderStatus(order: IOrder): Promise<any> {
+  async getCheckoutSession(
+    sessionId: string
+  ): Promise<Stripe.Checkout.Session> {
+    return this.getStripe().checkout.sessions.retrieve(sessionId);
+  }
+
+  async getPaymentIntentByOrder(
+    order: IOrder
+  ): Promise<Stripe.PaymentIntent | null> {
     try {
       const paymentIntents = await this.getStripe().paymentIntents.search({
         query: `metadata[\'ref_uuid\']:\'${order.ref_uuid}\'`,

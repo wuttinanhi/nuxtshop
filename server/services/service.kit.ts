@@ -14,7 +14,7 @@ import { StripeService } from "./payments/stripe.service";
 
 export class ServiceKit {
   private static isStartInit = false;
-  private static singleton: IServiceKit<any>;
+  private static singleton: IServiceKit;
 
   public static async initMockService() {
     ServiceKit.singleton = {
@@ -47,7 +47,7 @@ export class ServiceKit {
     };
   }
 
-  public static async get(): Promise<IServiceKit<any>> {
+  public static async get(): Promise<IServiceKit> {
     if (!ServiceKit.singleton && !ServiceKit.isStartInit) {
       ServiceKit.isStartInit = true;
 

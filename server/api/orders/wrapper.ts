@@ -4,7 +4,7 @@ import { slog } from "~/server/utils/slog";
 import { IOrder } from "~/types/entity";
 
 export async function checkOrderStatusWithStripeWrapper(
-  serviceKit: IServiceKit<any>,
+  serviceKit: IServiceKit,
   order: IOrder
 ) {
   // if order status is waiting for payment then check payment status from stripe
@@ -13,9 +13,8 @@ export async function checkOrderStatusWithStripeWrapper(
 
     try {
       // get order status from Stripe
-      const stripePaymentIntent = await serviceKit.payService.getOrderStatus(
-        order
-      );
+      const stripePaymentIntent =
+        await serviceKit.payService.getPaymentIntentByOrder(order);
 
       if (stripePaymentIntent) {
         const status = stripePaymentIntent.status;

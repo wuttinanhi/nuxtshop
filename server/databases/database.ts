@@ -292,11 +292,16 @@ Cart.init(
 
 export class Order extends Model {
   declare id: number;
-  declare userId: number;
-  declare addressId: number;
   declare totalPrice: number;
   declare status: OrderStatus;
   declare ref_uuid: string;
+
+  // stripe
+  declare stripe_checkout_session_id?: string;
+
+  // foreign keys
+  declare userId: number;
+  declare addressId: number;
 
   // associations
   declare user: User;
@@ -322,6 +327,10 @@ Order.init(
     ref_uuid: {
       type: DataTypes.STRING(128),
       allowNull: false,
+    },
+    stripe_checkout_session_id: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
   },
   {

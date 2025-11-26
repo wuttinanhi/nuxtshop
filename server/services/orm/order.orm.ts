@@ -207,6 +207,21 @@ export class OrderServiceORM implements IOrderService {
     return orders;
   }
 
+  async updateStripeCheckoutSessionID(
+    id: number,
+    stripe_checkout_session_id: string
+  ): Promise<IOrder> {
+    const getOrder = (await this.getOrder(id!)) as Order;
+    if (!getOrder) {
+      throw new Error("Order to update not found");
+    }
+
+    getOrder.stripe_checkout_session_id = stripe_checkout_session_id;
+    await getOrder.save();
+
+    return getOrder;
+  }
+
   async updateOrderStatus(id: number, status: OrderStatus): Promise<IOrder> {
     const order = (await this.getOrder(id)) as Order;
     if (!order) {
