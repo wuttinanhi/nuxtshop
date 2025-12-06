@@ -24,15 +24,32 @@ export class DatabaseSingleton {
           console.log(
             "DatabaseSingleton->getDatabase: Creating a new PostgreSQL connection..."
           );
+
+          let databaseUseSSL = process.env.DB_USE_SSL || false;
+          console.log("process.env.DB_TYPE", databaseUseSSL);
+
+          let dialectOptions = undefined;
+          if (databaseUseSSL) {
+            dialectOptions = {
+              ssl: {
+                require: true,
+                // depending on your CA setup, you may want to set rejectUnauthorized to true.
+                // set to false to allow self-signed certs:
+                rejectUnauthorized: false,
+              },
+            };
+          }
+
           DatabaseSingleton.singleton = new Sequelize({
             dialect: "postgres",
             dialectModule: pg,
             host: process.env.DB_HOST,
-            port: parseInt(parseInt(process.env.DB_PORT as any).toString()),
+            port: parseInt(process.env.DB_PORT as any),
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
             logging: false,
+            dialectOptions: dialectOptions,
           });
           break;
         default:
