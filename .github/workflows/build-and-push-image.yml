@@ -27,9 +27,11 @@ jobs:
             type=semver,pattern={{version}}
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
-          tags: 
+          tags: |
             - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:latest
             - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:${{ steps.meta.outputs.tags }}
+            
