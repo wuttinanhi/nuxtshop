@@ -5,7 +5,7 @@ import pg from "pg";
 import sqlite3 from "sqlite3";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
 import { UserRole } from "~/shared/enums/userrole.enum";
-import { IOrderItem } from "~/types/entity";
+import type { IOrderItem } from "~/types/entity";
 
 export class DatabaseSingleton {
   private static singleton: Sequelize;
@@ -88,9 +88,7 @@ export class DatabaseSingleton {
   }
 
   public static async syncDatabase() {
-    // console.log("Synchronizing models...");
-    // await this.datasource.drop();
-    // console.log("All tables dropped!");
+    console.log("Synchronizing models...");
     await this.singleton.sync({ alter: true });
     console.log("Synchronizing models done!");
   }
@@ -106,6 +104,21 @@ export class DatabaseSingleton {
       console.log("No tables found. Syncing database...");
       await DatabaseSingleton.syncDatabase();
     }
+  }
+
+  public static async resetDatabase() {
+    console.log("start reset database...");
+    await this.getDatabase().query(`DO $$ 
+DECLARE 
+    r RECORD; 
+BEGIN 
+    -- 1. Loop through all tables in the public schema
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP 
+        -- 2. Drop the table using CASCADE to bypass foreign key constraints
+        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE'; 
+    END LOOP; 
+END $$;`);
+    console.log("All tables dropped!");
   }
 }
 

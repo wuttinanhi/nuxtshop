@@ -10,7 +10,7 @@ import {
   User,
 } from "~/server/databases/database";
 import type { ICartService } from "../defs/cart.service";
-import { IUserService } from "../defs/user.service";
+import type { IUserService } from "../defs/user.service";
 
 export class CartServiceORM implements ICartService {
   private userService: IUserService;

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import { IOrder } from "~/types/entity";
+import type { IOrder } from "~/types/entity";
 import { toStripeAmount } from "~/utils/basic";
-import { IPaymentService } from "../defs/payment.service";
+import type { IPaymentService } from "../defs/payment.service";
 
 export class StripeService implements IPaymentService {
   protected static STRIPE_CURRENCY: string;

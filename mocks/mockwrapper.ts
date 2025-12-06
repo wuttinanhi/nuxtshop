@@ -5,9 +5,10 @@ import {
   Product,
   Stock,
 } from "~/server/databases/database";
-import { IProduct } from "~/types/entity";
-import { IServiceKit } from "../defs/servicekit";
-import { ServiceKit } from "../service.kit";
+import { UserRole } from "~/shared/enums/userrole.enum";
+import type { IAddress, IProduct } from "~/types/entity";
+import type { IServiceKit } from "../server/services/defs/servicekit";
+import { ServiceKit } from "../server/services/service.kit";
 
 export class MockWrapper {
   protected static async createMockOrders() {
@@ -98,8 +99,74 @@ export class MockWrapper {
     }
   }
 
-  public static async mockData(svk: IServiceKit<any>) {
+  public static async mockData(svk: IServiceKit) {
+    await this.createMockUsers();
     await this.createMockProduct();
     await this.createMockOrders();
+  }
+
+  public static async createMockUsers() {
+    console.log("UserSetup->checkAdminUser: Checking for admin user");
+
+    const serviceKit = await ServiceKit.get();
+
+    let adminUser = await serviceKit.userService.findByEmail(
+      "admin@example.com"
+    );
+
+    if (!adminUser) {
+      console.log("Admin user not found. Creating...");
+
+      const adminAddress: IAddress = {
+        addressText: "123 Admin St",
+        city: "Admin ville",
+        state: "AD",
+        zip: "12345",
+      };
+
+      await serviceKit.authService.register({
+        firstName: "Admin",
+        lastName: "User",
+        email: "admin@example.com",
+        password: "admin",
+        role: UserRole.ADMIN,
+        address: adminAddress,
+      });
+
+      const updatedAdminUser = await serviceKit.userService.findByEmail(
+        "admin@example.com"
+      );
+      if (!updatedAdminUser) {
+        throw new Error("Failed to update admin user role!");
+      }
+
+      await serviceKit.userService.setRole(updatedAdminUser, UserRole.ADMIN);
+
+      console.log("Admin user created");
+    }
+
+    let user1 = await serviceKit.userService.findByEmail("user1@example.com");
+
+    if (!user1) {
+      console.log("User 1 not found. Creating...");
+
+      const user1Address: IAddress = {
+        addressText: "1 User St",
+        city: "User City",
+        state: "USER",
+        zip: "12345",
+      };
+
+      await serviceKit.authService.register({
+        firstName: "User",
+        lastName: "One",
+        email: "user1@example.com",
+        password: "user1",
+        role: UserRole.USER,
+        address: user1Address,
+      });
+
+      console.log("User 1 created");
+    }
   }
 }

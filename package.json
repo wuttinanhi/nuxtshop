@@ -2,7 +2,7 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.0.0-dev.1005+sha512.91f84a392eea348ea4852a182912d2520273a4336f933b78cc44bc931eb999923c097e9433a9b355adc1f725725ea99082fc9f032a559df832632e764c92c798",
+  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -15,6 +15,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@types/cloudflare-turnstile": "^0.2.2",
     "bcrypt": "^5.1.1",
+    "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.20.1",
     "pg": "^8.16.3",
@@ -22,6 +23,7 @@
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "stripe": "^15.12.0",
+    "tsx": "^4.21.0",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

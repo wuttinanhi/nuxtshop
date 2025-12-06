@@ -1,7 +1,7 @@
 import { OrderStatus } from "#shared/enums/orderstatus.enum";
-import { IServiceKit } from "~/server/services/defs/servicekit";
+import type { IServiceKit } from "~/server/services/defs/servicekit";
 import { slog } from "~/server/utils/slog";
-import { IOrder } from "~/types/entity";
+import type { IOrder } from "~/types/entity";
 
 export async function checkOrderStatusWithStripeWrapper(
   serviceKit: IServiceKit,

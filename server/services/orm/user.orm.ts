@@ -1,7 +1,7 @@
 import { Address, DatabaseSingleton, User } from "~/server/databases/database";
 import { UserRole } from "~/shared/enums/userrole.enum";
-import { IUser, IUserInfo } from "~/types/entity";
-import { IUserService } from "../defs/user.service";
+import type { IUser, IUserInfo } from "~/types/entity";
+import type { IUserService } from "../defs/user.service";
 
 export class UserServiceORM implements IUserService {
   findById(id: number): Promise<IUser | null> {

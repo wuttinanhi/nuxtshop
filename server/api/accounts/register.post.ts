@@ -1,5 +1,5 @@
 import { ServiceKit } from "~/server/services/service.kit";
-import { IUserRegister } from "~/types/entity";
+import type { IUserRegister } from "~/types/entity";
 
 export default defineEventHandler(async (event) => {
   const serviceKit = await ServiceKit.get();

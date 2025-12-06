@@ -9,9 +9,9 @@ import {
   User,
 } from "~/server/databases/database";
 import { OrderStatus } from "~/shared/enums/orderstatus.enum";
-import { ICart, IOrder, IUser } from "~/types/entity";
+import type { ICart, IOrder, IUser } from "~/types/entity";
 import { calculateTotalPrice } from "~/utils/basic";
-import { IOrderFilter, IOrderService } from "../defs/order.service";
+import type { IOrderFilter, IOrderService } from "../defs/order.service";
 
 export class OrderServiceORM implements IOrderService {
   async createOrderFromCart(cart: ICart): Promise<IOrder> {
