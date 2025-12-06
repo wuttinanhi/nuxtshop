@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: wuttinanhi/nuxtshop
+          images: ${{ secrets.DOCKER_USERNAME }}/nuxtshop
           tags: |
             type=semver,pattern={{version}}
 
@@ -30,4 +30,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: wuttinanhi/nuxtshop:${{ steps.meta.outputs.tags }}
+          tags: 
+            - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:latest
+            - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:${{ steps.meta.outputs.tags }}
