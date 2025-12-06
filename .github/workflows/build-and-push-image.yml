@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+      
+  workflow_dispatch:
 
 jobs:
   push_to_registry:
@@ -34,4 +36,3 @@ jobs:
           tags: |
             - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:latest
             - ${{ secrets.DOCKER_USERNAME }}/nuxtshop:${{ steps.meta.outputs.tags }}
-            
