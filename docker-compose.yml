@@ -6,9 +6,9 @@ services:
     depends_on:
       - db
     image: docker.io/wuttinanhi/nuxtshop:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
     environment:
@@ -37,7 +37,7 @@ services:
           cpus: "0.5"
 
   db:
-    image: postgres:16.3-bookworm
+    image: postgres:18.1
     restart: always
     # set shared memory limit when using docker-compose
     shm_size: 128mb
@@ -52,7 +52,7 @@ services:
       POSTGRES_USER: mynuxtshop
       POSTGRES_DB: mynuxtshop
     volumes:
-      - nuxtshop_production_db:/var/lib/postgresql/data
+      - nuxtshop_production_db:/var/lib/postgresql
     ports:
       - "5432:5432"
     cpu_shares: 1024

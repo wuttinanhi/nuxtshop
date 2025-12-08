@@ -26,7 +26,7 @@ export class DatabaseSingleton {
           );
 
           let databaseUseSSL = process.env.DB_USE_SSL || false;
-          console.log("process.env.DB_TYPE", databaseUseSSL);
+          console.log("process.env.DB_USE_SSL", databaseUseSSL);
 
           let dialectOptions = undefined;
           if (databaseUseSSL) {
