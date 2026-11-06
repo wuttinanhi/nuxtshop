@@ -2,7 +2,7 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@12.18.0+sha512.9d7882d5dc82147ecfc4e062aa34834e0ad0296710a1837a1115ae012127d36b7109e321ac1598a1dd0a65597681b1e99917e12ed0d749eae91187943363beb3",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -14,22 +14,22 @@
   "dependencies": {
     "@stripe/stripe-js": "^3.5.0",
     "@types/cloudflare-turnstile": "^0.2.2",
-    "bcrypt": "^5.1.1",
-    "dotenv": "^17.2.3",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
-    "nuxt": "^3.20.2",
-    "pg": "^8.16.3",
+    "nuxt": "^3.21.11",
+    "pg": "^8.23.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.7",
+    "sequelize": "^6.37.8",
     "sqlite3": "^5.1.7",
     "stripe": "^15.12.0",
-    "tsx": "^4.21.0",
-    "vue": "^3.5.18",
-    "vue-router": "^4.5.1"
+    "tsx": "^4.23.15",
+    "vue": "^3.5.44",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/pg": "^8.15.5"
+    "@types/pg": "^8.23.1"
   }
 }

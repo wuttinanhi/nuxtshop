@@ -29,6 +29,17 @@ export default defineEventHandler(async (event) => {
     `User #${user.id} "${user.firstName} ${user.lastName}" is start paying for order ${order.id} (UUID: ${order.ref_uuid})`
   );
 
+  if (process.env.MOCK_STRIPE === "true") {
+    const updatedOrder = await serviceKit.orderService.payForOrder(order.id!);
+    console.log(
+      `Mock Stripe: Order #${order.id} paid successfully and updated to Preparing`
+    );
+    return {
+      url: `/orders/${order.id}`,
+      order: updatedOrder,
+    };
+  }
+
   let stripeSession;
   if (order.stripe_checkout_session_id) {
     stripeSession = await serviceKit.payService.getCheckoutSession(

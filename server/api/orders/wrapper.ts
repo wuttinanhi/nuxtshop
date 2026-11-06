@@ -7,6 +7,10 @@ export async function checkOrderStatusWithStripeWrapper(
   serviceKit: IServiceKit,
   order: IOrder
 ) {
+  if (process.env.MOCK_STRIPE === "true") {
+    return order;
+  }
+
   // if order status is waiting for payment then check payment status from stripe
   if (order.status === OrderStatus.WaitForPayment) {
     console.log(`Checking payment status for order ${order.id} from stripe...`);

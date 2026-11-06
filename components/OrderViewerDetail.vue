@@ -15,27 +15,48 @@ interface OrderViewerDetailProps {
 
 const props = defineProps<OrderViewerDetailProps>();
 
+const runtimeConfig = useRuntimeConfig();
+const isMockStripe = computed(
+  () =>
+    runtimeConfig.public.mockStripe === true ||
+    runtimeConfig.public.MOCK_STRIPE === "true" ||
+    process.env.MOCK_STRIPE === "true"
+);
+
 const userInject = inject(KEY_USER, undefined);
 const token = ref(userInject?.token);
 
+/**
+ * Initiates the payment process for an order.
+ * If mock stripe mode is enabled, marks the order status as preparing and redirects to the order details page.
+ * Otherwise, requests a checkout session and redirects to the Stripe payment gateway.
+ *
+ * @param order - The order to pay for
+ *
+ * @example
+ * ```ts
+ * await payOrder(order);
+ * ```
+ */
 async function payOrder(order: IOrder) {
   try {
-    const result = await $fetch(`/api/orders/pay/${order.id}`, {
+    const result = await $fetch<{ url: string }>(`/api/orders/pay/${order.id}`, {
       method: "POST",
       headers: buildAuthHeader(),
     });
 
     console.log(result);
+
+    if (isMockStripe.value) {
+      props.order.status = OrderStatus.Preparing;
+      await navigateTo(`/orders/${order.id}`);
+      return;
+    }
+
     const { url } = result;
 
     // redirect to payment gateway
     window.location.href = url;
-
-    // alert user with confetti
-    // alert("Order paid successfully 🎉");
-
-    // refresh page
-    // location.reload();
   } catch (error) {
     alert("Error when paying order");
   }
@@ -88,6 +109,7 @@ async function confirmReceived(order: IOrder) {
   props.order.status = OrderStatus.Delivered;
 }
 </script>
+
 <template>
   <div class="card">
     <div class="card-header">

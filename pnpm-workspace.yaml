@@ -1,5 +1,4 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - bcrypt
-  - esbuild
-  - sqlite3
+allowBuilds:
+  bcrypt: true
+  esbuild: true
+  sqlite3: true

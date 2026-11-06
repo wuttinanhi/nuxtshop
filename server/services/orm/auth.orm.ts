@@ -1,6 +1,22 @@
 import { UserRole } from "@/shared/enums/userrole.enum";
 import type { IUser, IUserRegister } from "@/types/entity";
-import bcrypt from "bcrypt";
+import { createRequire } from "node:module";
+import url from "node:url";
+
+// Patch deprecated url.resolve before loading bcrypt to avoid Node DEP0169 warning
+if (typeof url.resolve === "function") {
+  url.resolve = (from: string, to: string): string => {
+    try {
+      return new URL(to, from).toString();
+    } catch {
+      return new URL(to, new URL(from, "http://localhost/")).pathname;
+    }
+  };
+}
+
+const require = createRequire(import.meta.url);
+const bcrypt = require("bcrypt");
+
 import jwt from "jsonwebtoken";
 import { ValidationError } from "sequelize";
 import { Address, DatabaseSingleton, User } from "~/server/databases/database";

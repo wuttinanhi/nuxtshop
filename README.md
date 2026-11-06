@@ -2,6 +2,13 @@
 
 I'm experimenting with Nuxt 3 to build a shopping site. Some features are unstable but worth trying.
 
+# Demo
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@example.com` | `admin` |
+| User | `user1@example.com` | `user1` |
+
 # Screenshots
 
 <img src="./images/index.png" width="80%" />

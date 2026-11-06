@@ -13,7 +13,7 @@ export class DatabaseSingleton {
   public static getDatabase() {
     if (!DatabaseSingleton.singleton) {
       let databaseType = process.env.DB_TYPE || "sqlite";
-      console.log("Using database", databaseType);
+      console.log("Using database:", databaseType);
 
       switch (databaseType) {
         case "mysql":
