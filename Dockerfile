@@ -8,7 +8,7 @@ ENV SHELL=bash
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "pnpm-lock.yaml", "pnpm-workspace.yaml", "./"]
 
-RUN corepack enable
+RUN npm install -g corepack && corepack enable
 RUN pnpm setup
 RUN pnpm add -g nuxt
 RUN pnpm install --prod
