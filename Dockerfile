@@ -2,7 +2,7 @@ FROM node:lts-alpine AS build
 
 ENV NODE_ENV=production
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 ENV SHELL=bash
 
 WORKDIR /usr/src/app
