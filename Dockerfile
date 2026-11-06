@@ -28,7 +28,7 @@ RUN pnpm build
 EXPOSE 3000
 
 RUN chown -R node /usr/src/app
-RUN chmod +x ./runmock.sh
+RUN chmod +x ./dev-mock.sh
 
 # ENV vars incase forgot .env
 # ENV DB_TYPE=postgres
